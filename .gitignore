@@ -1,0 +1,21 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.exe
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Assembler and preprocessed source
+*.s
+*.i
+
+# Included external dependencies?
+/binutils-2.23.0
