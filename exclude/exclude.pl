@@ -23,9 +23,9 @@ my @exclude = qw(
 	pthread_attr_init
 	pthread_attr_destroy);
 
-@exclude = qw(abc 123);
-
+# Finds all files with extensions .c and .cpp.
+my $find = "find $src -name \"*.c\" -o -name \"*.cpp\"";
 # Does a recursive grep of $src directory. Files not containing strings in
 # @exclude array are listed in $out.
-my $cmd = "grep -rL -e" . join(" -e ", @exclude) . " $src > $out";
-system($cmd);
+my $grep = "grep -rL -e" . join(" -e ", @exclude) . " > $out";
+system($find . " | " . $grep);
