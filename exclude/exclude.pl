@@ -2,8 +2,7 @@
 # Recursively checks all files in src directory for calls to the pthread
 # library. Outputs a list of file names with relative paths to the $src
 # directory. These files do not contain calls to pthread library functions.
-# Author: Michael Zbeetnoff o8x7@ugrad.cs.ubc.ca
-# October 27, 2013
+# Date: October 27, 2013
 #
 # Usage:
 # perl exclude.pl <src dir> <output-file>

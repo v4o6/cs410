@@ -1,0 +1,9 @@
+1234;001;B;A;file:line
+1455;002;C;A;file:line
+1234;001;D;A;file:line
+1455;002;E;A;file:line
+1234;001;F;A;file:line
+1455;002;G;F;file:line
+1234;001;H;A;file:line
+1455;002;I;F;file:line
+1455;002;H;G;file:line
