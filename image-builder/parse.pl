@@ -5,6 +5,32 @@
 use strict;
 use warnings;
 
-#open FILE, '<', 'log.dat' or die $!;
-print "not working yet, run ./build.sh\n";
+# Parse log file into @records.
+open my $file, 'log.dat' or die "$!";
+my @records = ();
+while(my $line = <$file>) {   
+	my @row = split /;/, $line;
+	push @records, {
+		timestamp => $row[0],
+		id => $row[1],
+		name => $row[2],
+		parent => $row[3],
+		location => $row[4]
+	};
+}
+close $file;
+
+# Sort @records by timestamp.
+@records = sort {$a->{timestamp} <=> $b->{timestamp}} @records;
+
+# Write @records to .dot format.
+my $output = "digraph {\n";
+foreach my $record (@records) {
+	$output .= "\t" . $record->{parent} . " -> " . $record->{name} . ";\n";
+}
+$output .= "}\n";
+open $file, '> input1.dot';
+print $file $output;
+close $file;
+
 exit;
