@@ -2,15 +2,38 @@
 # Updated parser/formatter, that now targets pthread library instead
 # Skeleton laid out, the printed lines will depend on what the final log file
 # will look like.
+use strict;
+use warnings;
+
+# Globals
+my @nodes = ();
+my $timestamp;
+my $threadNum;
+my $enterExit;
+my $functionName;
+my $argumentList;
+my $stackOrReturn;
+my @arguments;
+
+## Subroutine for pushing node objects.
+sub PushEvent() {
+	/*push @nodes, {
+		time_stamp => 
+		thread_num =>
+		enter_exit =>
+		fn_name =>
+		arg_list =>
+		stack_ret =>
+	}*/
+}
 
 #All variable names currently temporary
-open (GRAPHFILE, ">", "graph.dot")
+open (GRAPHFILE, ">", "graph.dot");
 print GRAPHFILE "digraph G {\n";
 
-open (TIMESTAMPS, ">", "timestamps.txt")
-
+open (TIMESTAMPS, ">", "timestamps.txt");
 open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
-while (LOG<FILE>) {
+while (<LOGFILE>) {
 	chomp;
 	# Splitting information in logfile by tab spaces
 		($timestamp, $threadNum, $enterExit, $functionName, $argumentList, $stackOrReturn) = split("\t");
