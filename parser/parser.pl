@@ -15,16 +15,11 @@ my $argumentList;
 my $stackOrReturn;
 my @arguments;
 
-## Subroutine for pushing node objects.
-sub PushEvent() {
-	/*push @nodes, {
-		time_stamp => 
-		thread_num =>
-		enter_exit =>
-		fn_name =>
-		arg_list =>
-		stack_ret =>
-	}*/
+# Subroutine for parsing a line of logfile.txt, and pushing nodes as objects to
+# the hash array @nodes.
+sub ParseEvent {
+	chomp;
+	print $_;
 }
 
 #All variable names currently temporary
@@ -35,6 +30,9 @@ open (TIMESTAMPS, ">", "timestamps.txt");
 open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
 while (<LOGFILE>) {
 	chomp;
+	&ParseEvent();
+}
+
 	# Splitting information in logfile by tab spaces
 		($timestamp, $threadNum, $enterExit, $functionName, $argumentList, $stackOrReturn) = split("\t");
 	# This will depend upon how the logfile lists the arguments
