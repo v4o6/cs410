@@ -424,7 +424,7 @@ main (int argc, char **argv)
 #endif
   /*  bindtextdomain(PACKAGE, LOCALEDIR);*/
   /*  textdomain(PACKAGE);*/
-  /*  expandargv(&argc, &argv); /*libiberty*/
+  /*  expandargv(&argc, &argv); */
     
     if (argc < 3) {
         usage(stderr, 1);
