@@ -210,7 +210,6 @@ void _init()
       exit(EXIT_FAILURE); 
     }
 
-    printf("Opening threadtrace.log\n");
     // Open a file for logging
     threadtrace_fp = fopen("threadtrace.log", "w");
   }
@@ -227,7 +226,6 @@ void _fini()
   if (already_executed == 0) {
     libtrace_close();
     fclose(threadtrace_fp);
-    printf("Closing threadtrace.log\n");
   }
   
   already_executed = 1;
