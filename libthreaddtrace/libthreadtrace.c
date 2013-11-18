@@ -72,6 +72,8 @@
 #define MAX_BUF_LEN		(127)
 #define ARG_BUF_LEN		(12*(MAX_ARGS_TO_LOG+1))
 
+FILE *threadtrace_fp;
+
 static int n_chr(const char *str, char ch);
 static int is_cpp(const char *func_sig);
 static char* get_args(char *buf, int len, int n_args, int *frame);
@@ -139,15 +141,14 @@ void __cyg_profile_func_enter(void *func, void *callsite)
     get_func_name(func, func_buf);
     get_args(arg_buf, ARG_BUF_LEN, n_args, frame);
 
-    printf("%lld.%.9ld, t%d: %s %s [from %s]\n",
+    fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s %s [from %s]\n",
 	   (long long)ts.tv_sec, ts.tv_nsec, self,
 	   func_buf, arg_buf, site_buf);
   } else {
     get_args(arg_buf, ARG_BUF_LEN, n_args, frame);
 
     // print line to log 
-    // TODO: specify output file
-    printf("%lld.%.9ld, t%d: %s %s [from %s]\n",
+    fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s %s [from %s]\n",
 	   (long long)ts.tv_sec, ts.tv_nsec, self,
 	   func_buf, arg_buf, site_buf);
   }
@@ -208,6 +209,10 @@ void _init()
       fprintf(stderr, "libtrace_init() failed.");
       exit(EXIT_FAILURE); 
     }
+
+    printf("Opening threadtrace.log\n");
+    // Open a file for logging
+    threadtrace_fp = fopen("threadtrace.log", "w");
   }
 
   already_executed = 1;
@@ -221,6 +226,8 @@ void _fini()
   // Make sure we call _fini only once (prevents segfaults)
   if (already_executed == 0) {
     libtrace_close();
+    fclose(threadtrace_fp);
+    printf("Closing threadtrace.log\n");
   }
   
   already_executed = 1;
