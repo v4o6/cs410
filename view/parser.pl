@@ -55,16 +55,136 @@ sub GetThreadID {
 	return $_;
 }
 
-sub DrawPNG {
-	system('dot -Tpng graph.dot > output.png');
+sub WriteDOTFile {
+	#Prints out to our DOT file progressively each line.
+	open (GRAPHFILE, ">", "graph.dot");
+	print GRAPHFILE "digraph G {\n";
+	foreach my $key (keys %objects) {
+		if ($objects{$key}{'Type'} eq "Thread") {
+			if ($objects{$key}{'Status'} eq "Alive") {
+				print GRAPHFILE "$key [shape=box,color=black];\n";
+			}
+			if ($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=box,color=lightgray];\n";
+			}
+			# break the joins into array after removing trailing commas
+			$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
+			my @joinedThreads = split ',', $objects{$key}{'Joins'};
+			foreach my $join (@joinedThreads) {
+				print GRAPHFILE "$key -> $join [arrowhead=odot];\n";
+			}
+			# deals with printing out all edges for threads
+			foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
+				print GRAPHFILE "$key -> $linkKey";
+				if ($objects{$key}{'Links'}{$linkKey} eq "child") {
+					print GRAPHFILE " [arrowhead=normal];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
+					print GRAPHFILE " [arrowhead=diamond,color=black];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinunlocked") {
+					print GRAPHFILE " [arrowhead=diamond,color=lightgray];\n";
+				}	
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
+					print GRAPHFILE " [arrowhead=normal,color=black];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "unlocked") {
+					print GRAPHFILE " [arrowhead=normal,color=lightgray];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "condlock") {
+					print GRAPHFILE " [arrowhead=inv,color=black];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "condunlock") {
+					print GRAPHFILE " [arrowhead=inv,color=lightgray];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "barrier") {
+					print GRAPHFILE " [arrowhead=box,color=black];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "maxed barrier") {
+					print GRAPHFILE " [arrowhead=box,color=lightgray];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
+					print GRAPHFILE " [arrowhead=dot,color=blue];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
+					print GRAPHFILE " [arrowhead=dot,color=red];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "rwunlocked") {
+					print GRAPHFILE " [arrowhead=dot,color=lightgray];\n";
+				}
+			}
+		}
+		elsif ($objects{$key}{'Type'} eq "Spinlock") {
+			if ($objects{$key}{'Status'} eq "Unlocked") {
+				print GRAPHFILE "$key [shape=ellipse,color=black];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Locked") {
+				print GRAPHFILE "$key [shape=ellipse,color=red];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=ellipse,color=lightgray]\n";
+			}
+		}
+		elsif ($objects{$key}{'Type'} eq "Mutex") {
+			if ($objects{$key}{'Status'} eq "Unlocked") {
+				print GRAPHFILE "$key [shape=trapezium,color=black];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Locked") {
+				print GRAPHFILE "$key [shape=trapezium,color=red];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=trapezium,color=lightgray]\n";
+			}
+		}
+		elsif ($objects{$key}{'Type'} eq "Barrier") {
+			if ($objects{$key}{'Status'} eq "Unused") {
+				print GRAPHFILE "$key [shape=octagon,color=black];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Used") {
+				print GRAPHFILE "$key [shape=octagon,color=red];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=octagon,color=lightgray]\n";
+			}
+		}
+		elsif ($objects{$key}{'Type'} eq "RWLock") {
+			if ($objects{$key}{'Status'} eq "Unlocked") {
+				print GRAPHFILE "$key [shape=invtriangle,color=black];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Locked") {
+				print GRAPHFILE "$key [shape=invtriangle,color=red];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=invtriangle,color=lightgray]\n";
+			}
+		}
+		elsif ($objects{$key}{'Type'} eq "Condition Variable") {
+			if ($objects{$key}{'Status'} eq "Unlocked") {
+				print GRAPHFILE "$key [shape=parallelogram,color=black];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Locked") {
+				print GRAPHFILE "$key [shape=parallelogram,color=red];\n";
+			}
+			elsif($objects{$key}{'Status'} eq "Dead") {
+				print GRAPHFILE "$key [shape=parallelogram,color=lightgray]\n";
+			}
+		}
+	}
+	print GRAPHFILE "}";
 }
 
-#All variable names currently temporary
-open (GRAPHFILE, ">", "graph.dot");
+sub DrawPNG {
+	# Pad number with leading zeros.
+	my $num = sprintf("%03d", $_[0]);
+	my $cmd = 'dot -Tpng graph.dot > img/output' . $num . '.png';
+	system($cmd);
+}
+
+mkdir 'img';
+# All variable names currently temporary.
 open (TIMESTAMPS, ">", "timestamps.txt");
 open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
-print GRAPHFILE "digraph G {\n";
-$count = 0;
+$count = 1;
 while (<LOGFILE>) {
 	# Read a max of 100 lines
 	if ($count == 100) {
@@ -256,126 +376,13 @@ while (<LOGFILE>) {
 		}
 	}
 
-#Prints out to our DOT file progressively each line
-foreach my $key (keys %objects) {
-	if ($objects{$key}{'Type'} eq "Thread") {
-		if ($objects{$key}{'Status'} eq "Alive") {
-			print GRAPHFILE "$key [shape=box,color=black];\n";
-		}
-		if ($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=box,color=lightgray];\n";
-		}
-		# break the joins into array after removing trailing commas
-		$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
-		my @joinedThreads = split ',', $objects{$key}{'Joins'};
-		foreach my $join (@joinedThreads) {
-			print GRAPHFILE "$key -> $join [arrowhead=odot];\n";
-		}
-		# deals with printing out all edges for threads
-		foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
-			print GRAPHFILE "$key -> $linkKey";
-			if ($objects{$key}{'Links'}{$linkKey} eq "child") {
-				print GRAPHFILE " [arrowhead=normal];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
-				print GRAPHFILE " [arrowhead=diamond,color=black];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "spinunlocked") {
-				print GRAPHFILE " [arrowhead=diamond,color=lightgray];\n";
-			}	
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
-				print GRAPHFILE " [arrowhead=normal,color=black];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "unlocked") {
-				print GRAPHFILE " [arrowhead=normal,color=lightgray];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "condlock") {
-				print GRAPHFILE " [arrowhead=inv,color=black];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "condunlock") {
-				print GRAPHFILE " [arrowhead=inv,color=lightgray];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "barrier") {
-				print GRAPHFILE " [arrowhead=box,color=black];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "maxed barrier") {
-				print GRAPHFILE " [arrowhead=box,color=lightgray];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
-				print GRAPHFILE " [arrowhead=dot,color=blue];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
-				print GRAPHFILE " [arrowhead=dot,color=red];\n";
-			}
-			elsif ($objects{$key}{'Links'}{$linkKey} eq "rwunlocked") {
-				print GRAPHFILE " [arrowhead=dot,color=lightgray];\n";
-			}
-		}
-	}
-	elsif ($objects{$key}{'Type'} eq "Spinlock") {
-		if ($objects{$key}{'Status'} eq "Unlocked") {
-			print GRAPHFILE "$key [shape=ellipse,color=black];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Locked") {
-			print GRAPHFILE "$key [shape=ellipse,color=red];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=ellipse,color=lightgray]\n";
-		}
-	}
-	elsif ($objects{$key}{'Type'} eq "Mutex") {
-		if ($objects{$key}{'Status'} eq "Unlocked") {
-			print GRAPHFILE "$key [shape=trapezium,color=black];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Locked") {
-			print GRAPHFILE "$key [shape=trapezium,color=red];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=trapezium,color=lightgray]\n";
-		}
-	}
-	elsif ($objects{$key}{'Type'} eq "Barrier") {
-		if ($objects{$key}{'Status'} eq "Unused") {
-			print GRAPHFILE "$key [shape=octagon,color=black];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Used") {
-			print GRAPHFILE "$key [shape=octagon,color=red];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=octagon,color=lightgray]\n";
-		}
-	}
-	elsif ($objects{$key}{'Type'} eq "RWLock") {
-		if ($objects{$key}{'Status'} eq "Unlocked") {
-			print GRAPHFILE "$key [shape=invtriangle,color=black];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Locked") {
-			print GRAPHFILE "$key [shape=invtriangle,color=red];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=invtriangle,color=lightgray]\n";
-		}
-	}
-	elsif ($objects{$key}{'Type'} eq "Condition Variable") {
-		if ($objects{$key}{'Status'} eq "Unlocked") {
-			print GRAPHFILE "$key [shape=parallelogram,color=black];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Locked") {
-			print GRAPHFILE "$key [shape=parallelogram,color=red];\n";
-		}
-		elsif($objects{$key}{'Status'} eq "Dead") {
-			print GRAPHFILE "$key [shape=parallelogram,color=lightgray]\n";
-		}
-	}
-}
+	&WriteDOTFile();
+	&DrawPNG($count);
 	$count++;
 }
 
 #&DrawLegend();
-print GRAPHFILE "}";
 close (GRAPHFILE);
 close (TIMESTAMPS);
 close (LOGFILE);
-
-&DrawPNG();
 exit;
