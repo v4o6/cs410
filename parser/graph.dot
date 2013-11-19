@@ -1,0 +1,28 @@
+digraph G {
+Thread1 [shape=box,color=black];
+Thread1 -> Thread2 [arrowhead=normal];
+Thread2 [shape=box,color=black];
+Thread2 -> Thread2 [arrowhead=normal];
+Thread1 [shape=box,color=black];
+Thread1 -> Thread2 [arrowhead=odot];
+Thread1 -> Thread2 [arrowhead=normal];
+Thread2 [shape=box,color=black];
+Thread2 -> Thread2 [arrowhead=normal];
+Thread3 [shape=box,color=black];
+Thread1 [shape=box,color=black];
+Thread1 -> Thread [arrowhead=odot];
+Thread1 -> Thread3 [arrowhead=normal];
+Thread1 -> Thread2 [arrowhead=normal];
+Thread2 [shape=box,color=black];
+Thread2 -> Thread3 [arrowhead=normal];
+Thread2 -> Thread2 [arrowhead=normal];
+Thread3 [shape=box,color=black];
+Thread1 [shape=box,color=black];
+Thread1 -> ThreadThread3 [arrowhead=odot];
+Thread1 -> Thread3 [arrowhead=normal];
+Thread1 -> Thread2 [arrowhead=normal];
+Thread2 [shape=box,color=black];
+Thread2 -> Thread3 [arrowhead=normal];
+Thread2 -> Thread2 [arrowhead=normal];
+
+}

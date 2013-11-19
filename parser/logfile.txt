@@ -1,1 +1,4 @@
-1432432132.43634	T9022	Enter	pthread_create	(0x143324234234)	[from file:0]
+134123412.12341	Thread1	ENTER	pthread_create	(Thread2)	[stacktrace]:
+1343242.34234 Thread1 ENTER pthread_join (Thread2) [stacktrace]:
+1432423423 Thread1 ENTER pthread_create (Thread3) [stacktrace]:
+123182 Thread1 ENTER pthread_join (Thread3) [stacktrace]:
