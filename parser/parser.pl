@@ -55,6 +55,10 @@ sub GetThreadID {
 	return $_;
 }
 
+sub DrawPNG {
+	system('dot -Tpng graph.dot > output.png');
+}
+
 #All variable names currently temporary
 open (GRAPHFILE, ">", "graph.dot");
 open (TIMESTAMPS, ">", "timestamps.txt");
@@ -100,7 +104,7 @@ while (<LOGFILE>) {
 						    'Joins' => '',
 						    'Links' => \%links};
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
-		     }
+		}
 	}
 	elsif(($functionName eq "pthread_cancel") || ($functionName eq "pthread_exit") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
@@ -155,7 +159,6 @@ while (<LOGFILE>) {
 			}
 		}
 	}
-
 	elsif($functionName eq "pthread_cond_destroy" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
@@ -365,13 +368,14 @@ foreach my $key (keys %objects) {
 		}
 	}
 }
-$count++;
+	$count++;
 }
 
 #&DrawLegend();
-print GRAPHFILE "\n}";
-
+print GRAPHFILE "}";
 close (GRAPHFILE);
 close (TIMESTAMPS);
 close (LOGFILE);
+
+&DrawPNG();
 exit;

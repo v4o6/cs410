@@ -24,5 +24,4 @@ Thread1 -> Thread2 [arrowhead=normal];
 Thread2 [shape=box,color=black];
 Thread2 -> Thread3 [arrowhead=normal];
 Thread2 -> Thread2 [arrowhead=normal];
-
 }
