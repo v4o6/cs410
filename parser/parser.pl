@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 # Updated parser/formatter, that now targets pthread library instead
 # Skeleton laid out, the printed lines will depend on what the final log file
 # will look like.
@@ -14,6 +14,32 @@ my $functionName;
 my $argumentList;
 my $stackOrReturn;
 my @arguments;
+
+sub DrawLegend {
+	print 'digraph {
+		rankdir=LR
+		node [shape=plaintext]
+		subgraph cluster_01 { 
+		  label = "Legend";
+		  key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+		    <tr><td align="right" port="i1">item 1</td></tr>
+		    <tr><td align="right" port="i2">item 2</td></tr>
+		    <tr><td align="right" port="i3">item 3</td></tr>
+		    <tr><td align="right" port="i4">item 4</td></tr>
+		    </table>>]
+		  key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+		    <tr><td port="i1">&nbsp;</td></tr>
+		    <tr><td port="i2">&nbsp;</td></tr>
+		    <tr><td port="i3">&nbsp;</td></tr>
+		    <tr><td port="i4">&nbsp;</td></tr>
+		    </table>>]
+		  key:i1:e -> key2:i1:w [style=dashed]
+		  key:i2:e -> key2:i2:w [color=gray]
+		  key:i3:e -> key2:i3:w [color=peachpuff3]
+		  key:i4:e -> key2:i4:w [color=turquoise4, style=dotted]
+		}
+	}'
+}
 
 # TODO:
 # This function should take an argument list and return the thread's id.
@@ -145,6 +171,8 @@ while (<LOGFILE>) {
 	chomp;
 	&ParseEvent();
 }
+&DrawLegend();
+
 close (GRAPHFILE);
 close (TIMESTAMPS);
 close (LOGFILE);
