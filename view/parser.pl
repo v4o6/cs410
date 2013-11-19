@@ -16,11 +16,16 @@ my @arguments;
 my %objects;
 my $count;
 
+sub Init {
+	system('rm -fr img');
+	mkdir 'img';
+}
+
 sub DrawLegend {
 	print 'digraph {
 		rankdir=LR
 		node [shape=plaintext]
-		subgraph cluster_01 { 
+		subgraph cluster_01 {
 		  label = "Legend";
 		  key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
 		    <tr><td align="right" port="i1">item 1</td></tr>
@@ -59,6 +64,9 @@ sub WriteDOTFile {
 	#Prints out to our DOT file progressively each line.
 	open (GRAPHFILE, ">", "graph.dot");
 	print GRAPHFILE "digraph G {\n";
+	print GRAPHFILE "graph[page=\"8,10\"];\n";
+	print GRAPHFILE "graph[center=1];\n";
+	#print GRAPHFILE "graph[margin=\"2\"];\n";
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
 			if ($objects{$key}{'Status'} eq "Alive") {
@@ -180,7 +188,11 @@ sub DrawPNG {
 	system($cmd);
 }
 
-mkdir 'img';
+sub CreateGIF {
+	system('convert -delay 100 -loop 0 img/output*.png img/view.gif');
+}
+
+&Init();
 # All variable names currently temporary.
 open (TIMESTAMPS, ">", "timestamps.txt");
 open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
@@ -385,4 +397,6 @@ while (<LOGFILE>) {
 close (GRAPHFILE);
 close (TIMESTAMPS);
 close (LOGFILE);
+
+&CreateGIF();
 exit;
