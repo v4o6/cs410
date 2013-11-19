@@ -14,6 +14,7 @@ my $argumentList;
 my $stackOrReturn;
 my @arguments;
 my %objects;
+my $count;
 
 #All variable names currently temporary
 open (GRAPHFILE, ">", "graph.dot");
@@ -21,7 +22,12 @@ print GRAPHFILE "digraph G {\n";
 
 open (TIMESTAMPS, ">", "timestamps.txt");
 open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
+$count = 0;
 while (<LOGFILE>) {
+	# Read a max of 100 lines
+	if ($count == 100) {
+		last;
+	}
 	chomp;
 	# Splitting information in logfile by tab spaces
 	($timestamp, $callingThread, $enterExit, $functionName, $argumentList, $stackOrReturn) = split(' ');
@@ -320,6 +326,7 @@ foreach my $key (keys %objects) {
 		}
 	}
 }
+$count++;
 }
 
 
