@@ -1,0 +1,8 @@
+digraph G {
+graph[page="8,10"];
+graph[center=1];
+Thread1 [shape=box,color=black];
+Thread1 -> Thread2 [arrowhead=normal];
+Thread2 [shape=box,color=black];
+Thread2 -> Thread2 [arrowhead=normal];
+}
