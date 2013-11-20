@@ -1,1 +1,0 @@
-1432432132.43634	T9022	Enter	pthread_create	(0x143324234234)	[from file:0]
