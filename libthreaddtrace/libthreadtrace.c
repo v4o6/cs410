@@ -99,7 +99,8 @@ static get_func_name(void *func, char func_name[]) {
     sprintf(addr, "0x%x", offset);
       
     // Use addr2line to retrieve the function name using the offset into the library
-    sprintf(command, "addr2line -fe libpthread.so.0 %s | grep -v /", addr);
+    // TODO: Create a configurable variable for the custom pthread directory
+    sprintf(command, "addr2line -fe /home/ras/cs410/glibc-build/nptl/libpthread.so.0 %s | grep -v /", addr);
     pipe = popen(command, "r");
     if (pipe) {
       fgets(func_name, MAX_BUF_LEN, pipe);
