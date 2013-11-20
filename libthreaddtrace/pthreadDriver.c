@@ -9,10 +9,8 @@ void* print(void *dummy) {
 
 int main() {
   pthread_t t;
-
-  //pthread_create(&t, NULL, print, NULL);
-    
+  pthread_create(&t, NULL, print, NULL);
   pthread_join(t, NULL);
-  
+
   return 0;
 }
