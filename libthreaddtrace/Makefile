@@ -19,7 +19,7 @@ CTRACED_LDFLAGS  = -rdynamic -Wl,-dynamic-linker,$(LINKER_DIR)/ld-linux.so.2,-rp
 LIBTHREADTRACE_FILES   = libthreadtrace.c addr2line.c 
 LIBTHREADTRACE_OBJ     = $(LIBTHREADTRACE_FILES:%.c=%.o)
 LIBTHREADTRACE_CFLAGS  = -g -Wall -fPIC -I. $(BINUTILS_CFLAGS) -save-temps 
-LIBTHREADTRACE_LDFLAGS = -shared $(BINUTILS_LDFLAGS) -ldl -lc --version-script=libthreadtrace.exp 
+LIBTHREADTRACE_LDFLAGS = -shared $(BINUTILS_LDFLAGS) -lc --version-script=libthreadtrace.exp 
 
 all: pthreadDriver libthreadtrace.so #pc ctraced 
 
