@@ -6,6 +6,45 @@
 #include <dlfcn.h>
 #include <pthread.h>
 
+/* List of pthread library calls to instrument
+pthread_create
+pthread_exit
+pthread_join
+pthread_tryjoin
+pthread_timedjoin
+pthread_mutex_init
+pthread_mutex_destroy
+pthread_mutex_lock
+pthread_mutex_trylock
+pthread_mutex_timedlock
+pthread_mutex_unlock
+pthread_rwlock_init
+pthread_rwlock_destroy
+pthread_rwlock_rdlock
+pthread_rwlock_wrlock
+pthread_rwlock_tryrdlock
+pthread_rwlock_trywrlock
+pthread_rwlock_timedrdlock
+pthread_rwlock_timedwrlock
+pthread_rwlock_unlock
+pthread_cond_init
+pthread_cond_destroy
+pthread_cond_wait
+pthread_cond_timedwait
+pthread_cond_signal
+pthread_cond_broadcast
+pthread_spin_init
+pthread_spin_destroy
+pthread_spin_lock
+pthread_spin_trylock
+pthread_spin_unlock
+pthread_barrier_init
+pthread_barrier_destroy
+pthread_barrier_wait
+pthread_cancel
+*/
+
+
 FILE *threadtrace_fp;
 
 int (*orig_pthread_create)(pthread_t *newthread, 
