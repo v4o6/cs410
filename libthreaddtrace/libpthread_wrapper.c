@@ -6,7 +6,7 @@
 #include <dlfcn.h>
 #include <pthread.h>
 
-/* List of pthread library calls to instrument
+/*
 pthread_create
 pthread_exit
 pthread_join
@@ -44,6 +44,10 @@ pthread_barrier_wait
 pthread_cancel
 */
 
+#define ARG_BUF_LEN	(128)
+
+void log_func_enter(pthread_t tid, char *func_name, char *args);
+void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
 
 FILE *threadtrace_fp;
 
@@ -64,18 +68,17 @@ const pthread_attr_t *attr;
 void *(*start_routine) (void *);
 void *arg;
 {
-  struct timespec ts;
   pthread_t self = (pthread_t)0;
-  char arg_buf[256];
+  char arg_buf[ARG_BUF_LEN];
 
-  clock_gettime(CLOCK_REALTIME, &ts);
   self = pthread_self();
   sprintf(arg_buf, "(%d, %p, %p, %p)", *newthread, attr, start_routine, arg);
- 
-  fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s %s\n",
-	  (long long)ts.tv_sec, ts.tv_nsec, self, "pthread_create", arg_buf);
+  log_func_enter(self, "pthread_create", arg_buf);
 
-  return orig_pthread_create(newthread, attr, start_routine, arg);
+  int ret = orig_pthread_create(newthread, attr, start_routine, arg);
+  log_func_exit(self, "pthread_create", arg_buf, ret);
+
+  return ret;
 }
 
 int
@@ -139,4 +142,22 @@ void
 _fini()
 {
   fclose(threadtrace_fp);
+}
+
+void log_func_enter(pthread_t tid, char *func_name, char *args) {
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts); 
+
+  fprintf(threadtrace_fp, "%lld.%.9ld, T%d: %s %s\n",
+	  (long long)ts.tv_sec, ts.tv_nsec,
+	  *tid, func_name, args);
+}
+
+void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) {
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts); 
+
+  fprintf(threadtrace_fp, "%lld.%.9ld, T%d: %s %s %d\n",
+	  (long long)ts.tv_sec, ts.tv_nsec,
+	  *tid, func_name, args, ret);
 }
