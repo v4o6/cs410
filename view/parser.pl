@@ -76,7 +76,7 @@ sub WriteDOTFile {
 				print GRAPHFILE "$key [shape=box,color=lightgray];\n";
 			}
 			# break the joins into array after removing trailing commas
-			$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
+			#$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
 			my @joinedThreads = split ',', $objects{$key}{'Joins'};
 			foreach my $join (@joinedThreads) {
 				print GRAPHFILE "$key -> $join [arrowhead=odot];\n";
@@ -218,17 +218,21 @@ while (<LOGFILE>) {
 	# Scenarios for different functions. Assuming that all pthread calls will pass, besides the ones which waiti
 	if ($functionName eq "pthread_join" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
-			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],"
+			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
 		}
 	}
-	elsif($functionName eq "pthread_create" && $enterExit eq "ENTER") {
+	elsif(($functionName eq "pthread_tryjoin" || $functionName eq "pthread_timedjoin") && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
+		}	
+	}
+	elsif($functionName eq "pthread_create" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		my %links;
-		my @join;
 		$objects{$arguments[0]} = {
 			Type => 'Thread',
 			Status => 'Alive',
-			Joins => ' ',
-			Links => \%links};
+			Joins => '',
+			Links => %links};
 		if (exists $objects{$callingThread}) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
@@ -236,9 +240,10 @@ while (<LOGFILE>) {
 			$objects{$callingThread} = {'Type' => 'Thread',
 						    'Status' => 'Alive',
 						    'Joins' => '',
-						    'Links' => \%links};
+						    'Links' => %links};
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
+
 	}
 	elsif(($functionName eq "pthread_cancel") || ($functionName eq "pthread_exit") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
@@ -278,14 +283,21 @@ while (<LOGFILE>) {
 					   'Status' => 'Unlocked',
 					   'Blocked Threads' => @threads};
 	}
-	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $stackOrReturn eq "0" && $enterExit eq "Exit") {
+	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condlock';
+			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlock';
+		}
+	}
+	# should handle pthread_cond_signal coming in which trigger the exit call of cond wait
+	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $stackOrReturn eq "0" && $enterExit eq "EXIT") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$arguments[0]}{'Status'} = 'Unlocked';
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condunlock';
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'lock';
 		}	
 	}
-	#TODO: pthread_cond_signal not done, not sure how to show signal since it unblocks a random thread
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			foreach my $thread (@{$objects{$arguments[0]}{'Blocked Threads'}}) {
