@@ -18,4 +18,4 @@
 *.i
 
 # Included external dependencies?
-/binutils-2.23.0
+/binutils-2.*
