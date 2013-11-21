@@ -1,4 +1,5 @@
 var image_root = '../img/';
+var interval = null;
 
 function ChangeView(obj) {
 	// Change image.
@@ -34,6 +35,29 @@ function StepFrame(dir) {
 			var filename = active.nextSibling.src;
 			active.className = "";
 			ChangeView(next.firstChild);
+			break;
+	}
+}
+
+function Timer(cmd) {
+	
+	callback = function() {
+		var list = document.getElementById("frame-select");
+		var active = list.getElementsByClassName('active')[0];
+		var next = active.nextSibling.nextSibling;
+		ChangeView(next.firstChild);
+	};
+	switch(cmd) {
+		case 'start':
+			if (!interval) {
+				interval = window.setInterval(callback, 1600);
+			}
+			break;
+		case 'stop':
+			if (interval) {
+				window.clearInterval(interval);
+				interval = null;
+			}
 			break;
 	}
 }

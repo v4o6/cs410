@@ -19,7 +19,9 @@ my @graphs = ();
 
 sub Init {
 	system('rm -fr img');
+	system('rm -fr dot');
 	mkdir 'img';
+	mkdir 'dot';
 }
 
 sub AppendHeader {
@@ -87,8 +89,8 @@ sub AppendButtonNav {
 	return '<div id="btn-nav" class="row">
 						<div class="btn-grp">
 							<img class="btn-left" onclick="StepFrame(\'back\');"src="step-backward.svg" alt=""/>
-							<img class="btn-stop" src="stop.svg" alt=""/>
-							<img class="btn-play" src="play.svg" alt=""/>
+							<img class="btn-stop" onclick="Timer(\'stop\');" src="stop.svg" alt=""/>
+							<img class="btn-play" onclick="Timer(\'start\');" src="play.svg" alt=""/>
 							<img class="btn-right" onclick="StepFrame(\'next\');"src="step-forward.svg" alt=""/>
 						</div>
 					</div>
@@ -112,7 +114,7 @@ sub BuildInterface {
 	$html .= AppendGraphDetails;
 	$html .= AppendButtonNav;
 	$html .= AppendScripts;
-	open (INTERFACE, ">", "html/index2.html");
+	open (INTERFACE, ">", "html/index.html");
 	print INTERFACE $html;
 	close (INTERFACE);
 }
@@ -160,7 +162,7 @@ sub WriteDOTFile {
 	#Prints out to our DOT file progressively each line.
 	my $num = sprintf("%03d", $_[0]);
 	my $dotFilename = "graph".$num.".dot";
-	open (GRAPHFILE, ">", $dotFilename);
+	open (GRAPHFILE, ">", "dot/".$dotFilename);
 	print GRAPHFILE "digraph G {\n";
 	print GRAPHFILE "graph[center=1];\n";
 	foreach my $key (keys %objects) {
@@ -282,7 +284,7 @@ sub WriteDOTFile {
 sub DrawPNG {
 	# Pad number with leading zeros.
 	my $num = sprintf("%03d", $_[1]);
-	my $cmd = 'dot -Tpng '. $_[0] .' > img/output' . $num . '.png';
+	my $cmd = 'dot -Tpng dot/'. $_[0] .' > img/output' . $num . '.png';
 	system($cmd);
 }
 
