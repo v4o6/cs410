@@ -1,9 +1,10 @@
-134123412.12341	Thread1	ENTER pthread_create (Thread2) [stacktrace]:
+134123412.12341	Thread1	EXIT pthread_create (Thread2) 0
 1343242.34234 Thread1 ENTER pthread_join (Thread2) [stacktrace]:
-1432423423 Thread1 ENTER pthread_create (Thread3) [stacktrace]:
+1432423423 Thread1 EXIT pthread_create (Thread3) 0
 123182 Thread1 ENTER pthread_join (Thread3) [stacktrace]:
 45325324 Thread1 ENTER pthread_mutex_init (Mutex1) [stacktrace]:
 2341.23421 Thread1 ENTER pthread_mutex_lock (Mutex1) [stacktrace]:
-4341234.123412 Thread3 ENTER pthread_cancel(Thread3) [stacktrace]:
-341284219 Thread2 ENTER pthread_create (Thread4) [stacktrace]:
+4341234.123412 Thread3 ENTER pthread_cancel (Thread3) [stacktrace]:
+341284219 Thread2 EXIT pthread_create (Thread4) 0
 143242341 Thread1 ENTER pthread_join (Thread4) [stacktrace]:
+12324231 Thread1 ENTER pthread_spin_init (Spinlock1) [stacktrace];

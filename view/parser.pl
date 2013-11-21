@@ -228,7 +228,7 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
 		}	
 	}
-	elsif($functionName eq "pthread_create" && $enterExit eq "ENTER") {
+	elsif($functionName eq "pthread_create" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		my %links;
 		$objects{$arguments[0]} = {
 			Type => 'Thread',
