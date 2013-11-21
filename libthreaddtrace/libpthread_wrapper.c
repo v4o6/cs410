@@ -44,10 +44,14 @@ pthread_barrier_wait
 pthread_cancel
 */
 
-char arg_buf[128];
-FILE *threadtrace_fp;
+FILE *log_fp;
+#define ARG_BUF_LEN	(128)
+static char arg_buf[ARG_BUF_LEN] = {0};
 
-// Pointers to the original pthread functions
+void log_func_enter(pthread_t tid, char *func_name, char *args);
+void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
+
+
 int (*orig_pthread_create)(pthread_t *newthread, 
 			     const pthread_attr_t *attr,
 			     void *(*start_routine) (void *),
@@ -57,9 +61,6 @@ int (*orig_pthread_join)(pthread_t threadid,
 int (*orig_pthread_mutex_lock)(pthread_mutex_t * mutex);
 int (*orig_pthread_mutex_unlock)(pthread_mutex_t * mutex);
 
-// Forward declarations
-void log_func_enter(pthread_t tid, char *func_name, char *args);
-void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
 
 int
 pthread_create (newthread, attr, start_routine, arg)
@@ -86,11 +87,12 @@ pthread_join (threadid, thread_return)
 pthread_t threadid;
 void **thread_return;
 {
-  pthread_t self = pthread_self();
+  pthread_t self = (pthread_t)0;
 
-  sprintf(arg_buf, "(%u, %p)", (unsigned int)threadid, thread_return);
-  log_func_enter(self, "pthread_join", arg_buf);  
-  
+  self = pthread_self();
+  sprintf(arg_buf, "(%u, %p)", (unsigned int)(threadid), thread_return);
+  log_func_enter(self, "pthread_join", arg_buf);
+
   int ret = orig_pthread_join(threadid, thread_return);
   log_func_exit(self, "pthread_join", arg_buf, ret);
 
@@ -99,37 +101,42 @@ void **thread_return;
 
 int 
 pthread_mutex_lock (mutex)
-pthread_mutex_t * mutex;
+pthread_mutex_t *mutex;
 {
-  struct timespec ts;
-  int self = pthread_self();
-  clock_gettime(CLOCK_REALTIME, &ts);
-    
-  fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s\n",
-	  (long long)ts.tv_sec, ts.tv_nsec, self, "pthread_mutex_lock");
+  pthread_t self = (pthread_t)0;
 
-  return orig_pthread_mutex_lock(mutex);
+  self = pthread_self();
+  sprintf(arg_buf, "(%p)", mutex);
+  log_func_enter(self, "pthread_mutex_lock", arg_buf);
+
+  int ret = orig_pthread_mutex_lock(mutex);
+  log_func_exit(self, "pthread_mutex_lock", arg_buf, ret);
+
+  return ret;
 }
 
 int 
 pthread_mutex_unlock (mutex)
-pthread_mutex_t * mutex;
+pthread_mutex_t *mutex;
 {
-  struct timespec ts;
-  int self = pthread_self();
-  clock_gettime(CLOCK_REALTIME, &ts);
-  
-  fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s\n",
-	  (long long)ts.tv_sec, ts.tv_nsec, self, "pthread_mutex_unlock");
+  pthread_t self = (pthread_t)0;
 
-  return orig_pthread_mutex_unlock(mutex);
+  self = pthread_self();
+  sprintf(arg_buf, "(%p)", mutex);
+  log_func_enter(self, "pthread_mutex_unlock", arg_buf);
+
+  int ret = orig_pthread_mutex_unlock(mutex);
+  log_func_exit(self, "pthread_mutex_unlock", arg_buf, ret);
+
+  return ret;
+
 }
 
 void
 _init(void) 
 {
   // Open a file for logging
-  threadtrace_fp = fopen("threadtrace.log", "w");
+  log_fp = fopen("threadtrace.log", "w");
   orig_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   orig_pthread_join = dlsym(RTLD_NEXT, "pthread_join");
   orig_pthread_mutex_lock = dlsym(RTLD_NEXT, "pthread_mutex_lock");
@@ -139,25 +146,23 @@ _init(void)
 void
 _fini()
 {
-  fclose(threadtrace_fp);
+  fclose(log_fp);
 }
 
-void log_func_enter(pthread_t tid, char *func_name, char *args) 
-{
+void log_func_enter(pthread_t tid, char *func_name, char *args) {
   struct timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts); 
 
-  fprintf(threadtrace_fp, "%lld.%.9ld T%u ENTER %s %s\n",
+  fprintf(log_fp, "%lld.%.9ld T%d ENTER %s %s\n",
 	  (long long)ts.tv_sec, ts.tv_nsec,
 	  (unsigned int)tid, func_name, args);
 }
 
-void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) 
-{
+void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) {
   struct timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts); 
 
-  fprintf(threadtrace_fp, "%lld.%.9ld T%u EXIT %s %s %d\n",
+  fprintf(log_fp, "%lld.%.9ld T%d EXIT %s %s %d\n",
 	  (long long)ts.tv_sec, ts.tv_nsec,
 	  (unsigned int)tid, func_name, args, ret);
 }
