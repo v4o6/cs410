@@ -1,0 +1,68 @@
+body {
+	background-color: #888;
+}
+.container {
+	background-color: #fff;
+	max-width: 880px;
+	border-radius: 2em;
+	padding-bottom: 4em;
+	margin-top: 2em;
+	-webkit-box-shadow: 0 0.5em 0.5em #444;
+	box-shadow: 0 0.5em 0.5em #444;
+}
+a {
+	text-decoration: none;
+}
+#view {
+	text-align: center;
+	margin-top: 2em;
+	border-right: solid 1px #444;
+}
+#view > img {
+	max-width: 780px;
+	padding: 2em;
+}
+#control {
+	text-align: center;
+}
+#frame-select {
+	list-style-type: none;
+	margin-top: 2.5em;
+	margin-bottom: 2em;
+	text-align: left;
+}
+#frame-select a {
+	color: #aaa;
+}
+#frame-select a:hover {
+	text-decoration: none;
+}
+#frame-select .active {
+	list-style-image: url('play.svg');
+}
+#frame-select .active a {
+	color: #2a6496;
+}
+.btn-nav {
+	position: relative;
+	width: 8em;
+	height: 2em;
+	margin: 0 auto;
+	background-color: whiteSmoke;
+	border: 1px solid #E3E3E3;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.btn-left {
+	position: absolute;
+	bottom: 0.6em;
+	left: 1em;
+	height: 0.8em;
+}
+.btn-right {
+	position: absolute;
+	bottom: 0.6em;
+	right: 1em;
+	height: 0.8em;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>CS410 Thread Visualizer</title>
+	<link href="bootstrap.css" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			
+			<!-- Image Section -->
+			<div id="view" class="col-md-8">
+				<img src="../img/output001.png" alt="">
+			</div>
+
+			<!-- View Section -->
+			<div id="control" class="col-md-4">
+				<ul id="frame-select">
+					<li class="active"><a href="#output001.png" onclick="ChangeView(this)">1. pthread_create</a></li>
+					<li><a href="#output002.png" onclick="ChangeView(this);">2. lock</a></li>
+					<li><a href="#output003.png" onclick="ChangeView(this);">3. pthread_create</a></li>
+					<li><a href="#output004.png" onclick="ChangeView(this);">4. update</a></li>
+				</ul>
+				<div class="btn-nav">
+					<img class="btn-left" onclick="StepFrame('back');"src="step-backward.svg" alt=""/>
+					<img class="btn-right" onclick="StepFrame('next');"src="step-forward.svg" alt=""/>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="jquery.js"></script>
+	<script>
+		var image_root = '../img/';
+
+		function ChangeView(obj) {
+			// Change image.
+			var view = document.getElementById("view");
+			var filename = obj.href.substring(obj.href.lastIndexOf('#') + 1);
+			view.firstElementChild.src = image_root + filename;
+			// Update selector.
+			var items = document.getElementById('frame-select').getElementsByTagName('li');
+			for (i=0; i<items.length; i++) {
+				items[i].className = "";
+			}
+			obj.parentNode.className = "active";
+		}
+		
+		function StepFrame(dir) {
+			var list = document.getElementById("frame-select");
+			var active = list.getElementsByClassName('active')[0];
+			var next = active.nextSibling.nextSibling;
+			var prev = active.previousSibling.previousSibling;
+			switch(dir) {
+				case 'back':
+					if (!prev)
+						prev = list.lastChild;
+					prev.className = "active";
+					var filename = prev.firstChild.src;
+					active.className = "";
+					ChangeView(prev.firstChild);
+					break;					
+				case 'next':
+					if (!next)
+						next = list.firstChild;
+					next.className = "active";
+					var filename = active.nextSibling.src;
+					active.className = "";
+					ChangeView(next.firstChild);
+					break;
+			}
+		}
+
+	</script>
+</body>
+</html>
