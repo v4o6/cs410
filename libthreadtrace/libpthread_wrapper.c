@@ -64,16 +64,18 @@ int (*orig_pthread_create)(pthread_t *newthread,
 			     void *arg);
 int (*orig_pthread_join)(pthread_t threadid, 
 			   void **thread_return);
+int (*orig_pthread_mutex_init)(pthread_mutex_t *mutex,
+			       const pthread_mutexattr_t *mutexattr);
 int (*orig_pthread_mutex_lock)(pthread_mutex_t *mutex);
 int (*orig_pthread_mutex_unlock)(pthread_mutex_t *mutex);
-int (*orig_pthread_cond_init) (pthread_cond_t *cond,
+int (*orig_pthread_cond_init)(pthread_cond_t *cond,
 			      const pthread_condattr_t *cond_attr);
-int (*orig_pthread_cond_destroy) (pthread_cond_t *cond);
-int (*orig_pthread_cond_signal) (pthread_cond_t *cond);
+int (*orig_pthread_cond_destroy)(pthread_cond_t *cond);
+int (*orig_pthread_cond_signal)(pthread_cond_t *cond);
 int (*orig_pthread_cond_broadcast) (pthread_cond_t *cond);
-int (*orig_pthread_cond_wait) (pthread_cond_t *cond,
+int (*orig_pthread_cond_wait)(pthread_cond_t *cond,
 			      pthread_mutex_t *mutex);
-int (*orig_pthread_cond_timedwait) (pthread_cond_t *cond,
+int (*orig_pthread_cond_timedwait)(pthread_cond_t *cond,
 				   pthread_mutex_t *mutex,
 				   const struct timespec *abstime);
 
@@ -92,7 +94,6 @@ void *arg;
   log_func_enter(self, "pthread_create", arg_buf);
 
   int ret = orig_pthread_create(newthread, attr, start_routine, arg);
-
   sprintf(arg_buf, "(T%u, %p, %s, %p)", (unsigned int)(*newthread), attr, func_buf, arg);
   log_func_exit(self, "pthread_create", arg_buf, ret);
 
@@ -112,6 +113,21 @@ void **thread_return;
   int ret = orig_pthread_join(threadid, thread_return);
   sprintf(arg_buf, "(T%u, %p)", (unsigned int)(threadid), thread_return);
   log_func_exit(self, "pthread_join", arg_buf, ret);
+
+  return ret;
+}
+
+int pthread_mutex_init (mutex, mutexattr)
+pthread_mutex_t *mutex;
+const pthread_mutexattr_t *mutexattr;
+{
+  pthread_t self = pthread_self();
+
+  sprintf(arg_buf, "(M%u, %p)", (unsigned int)mutex, mutexattr);
+  log_func_enter(self, "pthread_mutex_init", arg_buf);
+
+  int ret = orig_pthread_mutex_init(mutex, mutexattr);
+  log_func_exit(self, "pthread_mutex_init", arg_buf, ret);
 
   return ret;
 }
@@ -158,8 +174,6 @@ const pthread_condattr_t *cond_attr;
   log_func_enter(self, "pthread_cond_init", arg_buf);
 
   int ret = orig_pthread_cond_init(cond, cond_attr);
-
-  sprintf(arg_buf, "(C%u, %p)", (unsigned int)cond, cond_attr);
   log_func_exit(self, "pthread_cond_init", arg_buf, ret);
 
   return ret;
@@ -274,6 +288,7 @@ _init(void)
   /* delink targeted pthread functions to override them with our own */
   orig_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   orig_pthread_join = dlsym(RTLD_NEXT, "pthread_join");
+  orig_pthread_mutex_init = dlsym(RTLD_NEXT, "pthread_mutex_init");
   orig_pthread_mutex_lock = dlsym(RTLD_NEXT, "pthread_mutex_lock");
   orig_pthread_mutex_unlock = dlsym(RTLD_NEXT, "pthread_mutex_unlock");
   orig_pthread_cond_init = dlsym(RTLD_NEXT, "pthread_cond_init");

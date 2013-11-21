@@ -13,19 +13,19 @@
 int number;                                     /* the resource */
 
 /* Mutex to protect the resource. */
-pthread_mutex_t mu= PTHREAD_MUTEX_INITIALIZER;  /* to protect the resource*/
+pthread_mutex_t mu; //= PTHREAD_MUTEX_INITIALIZER;  /* to protect the resource*/
 
 /*
   Condition variable to signal consumer that a new number is available for
   consumption.
 */
-pthread_cond_t sig_consumer= PTHREAD_COND_INITIALIZER;
+pthread_cond_t sig_consumer; //= PTHREAD_COND_INITIALIZER;
 /*
   Condition variable to signal the producer that
   (a) the new number has been consumed,
   (b) generate another one.
 */
-pthread_cond_t sig_producer= PTHREAD_COND_INITIALIZER;
+pthread_cond_t sig_producer; //= PTHREAD_COND_INITIALIZER;
 
 
 /**
@@ -117,6 +117,10 @@ int main()
 {
   int rc, i;
     pthread_t t[2];
+
+  pthread_mutex_init(&mu, NULL);
+  pthread_cond_init(&sig_consumer, NULL);
+  pthread_cond_init(&sig_producer, NULL);
 
   // Create consumer & producer threads. 
   if ((rc= pthread_create(&t[0], NULL, consumer, NULL)))

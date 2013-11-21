@@ -1,4 +1,4 @@
 #!/bin/sh
 
-LD_PRELOAD=./libpthread_wrapper.so ./pc
+LD_PRELOAD=./libpthread_wrapper.so ./producer_consumer
 

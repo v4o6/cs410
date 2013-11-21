@@ -5,7 +5,7 @@ BINUTILS_SOURCE  = ../binutils-2.22
 LIBTRACE_CFLAGS  = -DTARGET=$(BINUTILS_TARGET) -fPIC -I$(BINUTILS_SOURCE)/bfd -I$(BINUTILS_SOURCE)/include -I$(BINUTILS_SOURCE)/binutils -I. -Wall -O4
 LIBTRACE_LDFLAGS = -L$(BINUTILS_SOURCE)/bfd -L$(BINUTILS_SOURCE)/libiberty -lbfd -liberty -lz
 
-TARGET		= pc
+TARGET		= producer_consumer
 TARGET_SRC	= $(TARGET).c 
 TARGET_OBJ      = $(TARGET_SRC:%.c=%.o)
 CFLAGS		= -rdynamic -g -Wall -pthread
