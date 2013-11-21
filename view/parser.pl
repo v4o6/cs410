@@ -62,7 +62,9 @@ sub GetThreadID {
 
 sub WriteDOTFile {
 	#Prints out to our DOT file progressively each line.
-	open (GRAPHFILE, ">", "graph.dot");
+	my $num = sprintf("%03d", $_[0]);
+	my $dotFilename = "graph".$num.".dot";
+	open (GRAPHFILE, ">", $dotFilename);
 	print GRAPHFILE "digraph G {\n";
 	print GRAPHFILE "graph[page=\"8,10\"];\n";
 	print GRAPHFILE "graph[center=1];\n";
@@ -179,12 +181,14 @@ sub WriteDOTFile {
 		}
 	}
 	print GRAPHFILE "}";
+	close (GRAPHFILE);
+	return $dotFilename;
 }
 
 sub DrawPNG {
 	# Pad number with leading zeros.
-	my $num = sprintf("%03d", $_[0]);
-	my $cmd = 'dot -Tpng graph.dot > img/output' . $num . '.png';
+	my $num = sprintf("%03d", $_[1]);
+	my $cmd = 'dot -Tpng '. $_[0] .' > img/output' . $num . '.png';
 	system($cmd);
 }
 
@@ -388,13 +392,12 @@ while (<LOGFILE>) {
 		}
 	}
 
-	&WriteDOTFile();
-	&DrawPNG($count);
+	my $filename = &WriteDOTFile($count);
+	&DrawPNG($filename, $count);
 	$count++;
 }
 
 #&DrawLegend();
-close (GRAPHFILE);
 close (TIMESTAMPS);
 close (LOGFILE);
 
