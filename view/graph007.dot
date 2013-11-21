@@ -1,5 +1,4 @@
 digraph G {
-graph[page="8,10"];
 graph[center=1];
 Thread3 [shape=box,color=lightgray];
 Thread1 [shape=box,color=black];
