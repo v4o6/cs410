@@ -14,14 +14,15 @@ LINKER_DIR = /home/ras/cs410/glibc-build/elf
 CTRACED_FILES    = ctraced.c 
 CTRACED_OBJ      = $(CTRACED_FILES:%.c=%.o)
 CTRACED_CFLAGS   = -rdynamic -g -Wall -pthread -save-temps -finstrument-functions 
-CTRACED_LDFLAGS  = -rdynamic -Wl,-dynamic-linker,$(LINKER_DIR)/ld-linux.so.2,-rpath,$(PTHREAD_DIR) -lpthread 
+CTRACED_LDFLAGS = -rdynamic -lpthread
+#CTRACED_LDFLAGS  = -rdynamic -Wl,-dynamic-linker,$(LINKER_DIR)/ld-linux.so.2,-rpath,$(PTHREAD_DIR) -lpthread 
 
 LIBTHREADTRACE_FILES   = libthreadtrace.c addr2line.c 
 LIBTHREADTRACE_OBJ     = $(LIBTHREADTRACE_FILES:%.c=%.o)
 LIBTHREADTRACE_CFLAGS  = -g -Wall -fPIC -I. $(BINUTILS_CFLAGS) -save-temps 
 LIBTHREADTRACE_LDFLAGS = -shared $(BINUTILS_LDFLAGS) -lc --version-script=libthreadtrace.exp 
 
-all: pthreadDriver libthreadtrace.so #pc ctraced 
+all: pthreadDriver libthreadtrace.so pc #ctraced  
 
 pthreadDriver: pthreadDriver.o 
 	$(CC) -o $@ $+ $(CTRACED_LDFLAGS)
