@@ -26,12 +26,15 @@ void *(*start_routine) (void *);
 void *arg;
 {
   struct timespec ts;
-  int self = 0;
+  pthread_t self = (pthread_t)0;
+  char arg_buf[256];
+
   clock_gettime(CLOCK_REALTIME, &ts);
-  self = syscall(SYS_gettid);
+  self = pthread_self();
+  sprintf(arg_buf, "(%d, %p, %p, %p)", *newthread, attr, start_routine, arg);
  
-  fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s\n",
-	  (long long)ts.tv_sec, ts.tv_nsec, self, "pthread_create");
+  fprintf(threadtrace_fp, "%lld.%.9ld, t%d: %s %s\n",
+	  (long long)ts.tv_sec, ts.tv_nsec, self, "pthread_create", arg_buf);
 
   return orig_pthread_create(newthread, attr, start_routine, arg);
 }
