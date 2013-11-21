@@ -93,7 +93,8 @@ void *arg;
 }
 
 void
-pthread_exit (void *retval)
+pthread_exit (retval)
+void *retval;
 {
   pthread_t self = pthread_self();
 
