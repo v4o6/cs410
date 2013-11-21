@@ -1,9 +1,11 @@
 CC  = gcc
 
+#BINUTILS_TARGET  = '"x86_64-pc-linux-gnu"'
+#BINUTILS_TARGET  = '"x86_64-laptop-linux-gnu"'
 BINUTILS_TARGET  = '"x86_64-unknown-linux-gnu"'
 BINUTILS_SOURCE  = ../binutils-2.22
 LIBTRACE_CFLAGS  = -DTARGET=$(BINUTILS_TARGET) -fPIC -I$(BINUTILS_SOURCE)/bfd -I$(BINUTILS_SOURCE)/include -I$(BINUTILS_SOURCE)/binutils -I. -Wall -O4
-LIBTRACE_LDFLAGS = -L$(BINUTILS_SOURCE)/bfd -L$(BINUTILS_SOURCE)/libiberty -lbfd -liberty -lz
+LIBTRACE_LDFLAGS = -lbfd -liberty -lz #-L$(BINUTILS_SOURCE)/bfd -L$(BINUTILS_SOURCE)/libiberty
 
 TARGET		= producer_consumer
 TARGET_SRC	= $(TARGET).c 

@@ -90,11 +90,11 @@ void *arg;
   pthread_t self = pthread_self();
   libtrace_translate_addresses (start_routine, func_buf, MAX_BUF_LEN, NULL, 0);
 
-  sprintf(arg_buf, "(T%u, %p, %s, %p)", 0, attr, func_buf, arg);
+  sprintf(arg_buf, "(T%u,%p,%s,%p)", 0, attr, func_buf, arg);
   log_func_enter(self, "pthread_create", arg_buf);
 
   int ret = orig_pthread_create(newthread, attr, start_routine, arg);
-  sprintf(arg_buf, "(T%u, %p, %s, %p)", (unsigned int)(*newthread), attr, func_buf, arg);
+  sprintf(arg_buf, "(T%u,%p,%s,%p)", (unsigned int)(*newthread), attr, func_buf, arg);
   log_func_exit(self, "pthread_create", arg_buf, ret);
 
   return ret;
@@ -107,11 +107,11 @@ void **thread_return;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(T%u, %p)", (unsigned int)(threadid), thread_return);
+  sprintf(arg_buf, "(T%u,%p)", (unsigned int)(threadid), thread_return);
   log_func_enter(self, "pthread_join", arg_buf);
 
   int ret = orig_pthread_join(threadid, thread_return);
-  sprintf(arg_buf, "(T%u, %p)", (unsigned int)(threadid), thread_return);
+  sprintf(arg_buf, "(T%u,%p)", (unsigned int)(threadid), thread_return);
   log_func_exit(self, "pthread_join", arg_buf, ret);
 
   return ret;
@@ -123,7 +123,7 @@ const pthread_mutexattr_t *mutexattr;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(M%u, %p)", (unsigned int)mutex, mutexattr);
+  sprintf(arg_buf, "(M%u,%p)", (unsigned int)mutex, mutexattr);
   log_func_enter(self, "pthread_mutex_init", arg_buf);
 
   int ret = orig_pthread_mutex_init(mutex, mutexattr);
@@ -170,7 +170,7 @@ const pthread_condattr_t *cond_attr;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(C%u, %p)", (unsigned int)cond, cond_attr);
+  sprintf(arg_buf, "(C%u,%p)", (unsigned int)cond, cond_attr);
   log_func_enter(self, "pthread_cond_init", arg_buf);
 
   int ret = orig_pthread_cond_init(cond, cond_attr);
@@ -230,7 +230,7 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(C%u, M%u)", (unsigned int)cond, (unsigned int)mutex);
+  sprintf(arg_buf, "(C%u,M%u)", (unsigned int)cond, (unsigned int)mutex);
   log_func_enter(self, "pthread_cond_wait", arg_buf);
 
   int ret = orig_pthread_cond_wait(cond, mutex);
@@ -248,7 +248,7 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(C%u, M%u, %lld.%.9ld )", (unsigned int)cond, (unsigned int)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
+  sprintf(arg_buf, "(C%u,M%u,%lld.%.9ld)", (unsigned int)cond, (unsigned int)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_cond_timedwait", arg_buf);
 
   int ret = orig_pthread_cond_timedwait(cond, mutex, abstime);
@@ -310,7 +310,7 @@ void log_func_enter(pthread_t tid, char *func_name, char *args) {
   struct timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts); 
 
-  fprintf(log_fp, "%lld.%.9ld T%u ENTER %s %s\n",
+  fprintf(log_fp, "%lld.%.9ld T%u ENTER %s %s -\n",
 	  (long long)ts.tv_sec, ts.tv_nsec,
 	  (unsigned int)tid, func_name, args);
 }
