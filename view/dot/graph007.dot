@@ -1,12 +1,5 @@
 digraph G {
-graph[center=1];
-Thread3 [shape=box,color=lightgray];
-Thread1 [shape=box,color=black];
-Thread1 -> Thread2 [arrowhead=odot];
-Thread1 -> Thread3 [arrowhead=odot];
-Thread1 -> Thread3 [arrowhead=normal];
-Thread1 -> Mutex1 [arrowhead=normal,color=black];
-Thread1 -> Thread2 [arrowhead=normal];
-Mutex1 [shape=trapezium,color=red];
-Thread2 [shape=box,color=black];
+graph[center=true];
+Thread2554929600 -> Thread2557032192 [arrowhead=normal];
+Thread2557032192 [shape=box,color=black];
 }

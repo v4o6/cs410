@@ -56,9 +56,23 @@ sub AppendView {
 		</div>";
 }
 
+sub AppendButtonNav {
+	return '<div id="control" class="col-md-4">
+		<div id="btn-nav" class="row btm-border">
+			<div class="btn-grp">
+				<div class="btn" onclick="StepFrame(\'back\');"><img src="step-backward.svg" alt=""/></div>
+				<div class="btn" onclick="Timer(\'stop\');"><img src="stop.svg" alt=""/></div>
+				<div class="btn" onclick="Timer(\'start\');"><img src="play.svg" alt=""/></div>
+				<div class="btn" onclick="StepFrame(\'next\');"><img src="step-forward.svg" alt=""/></div>
+			</div>
+			<!--table style="margin:0.5em;">
+				<tr><td>Step Speed(ms)</td><td><input type="text" onkeypress="TimerDelay(this);" value="1600"/></td></tr>
+			</table-->
+		</div>';
+}
+
 sub AppendGraphSelectorHeader {
 	return '<!-- View Section -->
-		<div id="control" class="col-md-4">
 			<div id="frame-select" class="row btm-border">
 				<ul id="frame-select-list">';
 }
@@ -73,25 +87,11 @@ sub AppendGraphSelectorFooter {
 }
 
 sub AppendGraphDetails {
-	return '<div id="details" class="row btm-border">
-			<table>
-			</table>
-		</div>';
-}
-
-sub AppendButtonNav {
-	return '<div id="btn-nav" class="row">
-						<div class="btn-grp">
-							<img class="btn-left" onclick="StepFrame(\'back\');"src="step-backward.svg" alt=""/>
-							<img class="btn-stop" onclick="Timer(\'stop\');" src="stop.svg" alt=""/>
-							<img class="btn-play" onclick="Timer(\'start\');" src="play.svg" alt=""/>
-							<img class="btn-right" onclick="StepFrame(\'next\');"src="step-forward.svg" alt=""/>
+	return '<div id="details" class="row">
+								<table>
+								</table>
+							</div>
 						</div>
-						<table style="display:inline;">
-							<tr><td>Delay(ms)</td><td><input type="text" onkeypress="TimerDelay(this);" value="1600"/></td></tr>
-						</table>
-					</div>
-				</div>
 
 			</div>
 		</div>';
@@ -113,11 +113,11 @@ sub BuildInterface {
 	my $html = AppendHeader;
 	$html .= AppendProgramName('Program Name');
 	$html .= AppendView;
+	$html .= AppendButtonNav;
 	$html .= AppendGraphSelectorHeader;
 	$html .= AppendGraphSelector;
 	$html .= AppendGraphSelectorFooter;
 	$html .= AppendGraphDetails;
-	$html .= AppendButtonNav;
 	$html .= AppendScripts;
 	open (INTERFACE, ">", "html/index.html");
 	print INTERFACE $html;
@@ -127,6 +127,11 @@ sub BuildInterface {
 sub PNGFileName {
 	my $num = sprintf("%03d", $_[0]);
 	return "output$num.png";
+}
+
+sub SVGFileName {
+	my $num = sprintf("%03d", $_[0]);
+	return "output$num.svg";
 }
 
 sub DrawLegend {
@@ -190,7 +195,7 @@ sub WriteDOTFile {
 	my $dotFilename = "graph".$num.".dot";
 	open (GRAPHFILE, ">", "dot/".$dotFilename);
 	print GRAPHFILE "digraph G {\n";
-	print GRAPHFILE "graph[center=1];\n";
+	print GRAPHFILE "graph[center=true];\n";
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
 			if ($objects{$key}{'Status'} eq "Alive") {
@@ -314,6 +319,13 @@ sub DrawPNG {
 	system($cmd);
 }
 
+sub DrawSVG{
+	# Pad number with leading zeros.
+	my $num = sprintf("%03d", $_[1]);
+	my $cmd = 'dot -Tsvg dot/'. $_[0] .' > img/output' . $num . '.svg';
+	system($cmd);
+}
+
 sub CreateGIF {
 	system('convert -delay 100 -loop 0 img/output*.png img/view.gif');
 }
@@ -321,7 +333,10 @@ sub CreateGIF {
 &Init();
 # All variable names currently temporary.
 open (TIMESTAMPS, ">", "timestamps.txt");
-open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
+
+#open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
+open (LOGFILE, "../libthreadtrace/libthreadtrace.log") or die "Could not find specified logfile.";
+
 $count = 1;
 while (<LOGFILE>) {
 	# Read a max of 100 lines
@@ -529,16 +544,16 @@ while (<LOGFILE>) {
 	}
 
 	my $filename = &WriteDOTFile($count);
-	&DrawPNG($filename, $count);
+	&DrawSVG($filename, $count);
 
 	if (1 == $count) {
-		&WriteHTMLSelector(&PNGFileName($count),$count,1);
+		&WriteHTMLSelector(&SVGFileName($count),$count,1);
 	}
 	else {
-		&WriteHTMLSelector(&PNGFileName($count),$count,0);
+		&WriteHTMLSelector(&SVGFileName($count),$count,0);
 	}
 
-	&WriteHTMLDetails(&PNGFileName($count),$count);
+	&WriteHTMLDetails(&SVGFileName($count),$count);
 
 	$count++;
 }

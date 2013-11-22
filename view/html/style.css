@@ -3,7 +3,7 @@ body {
 }
 .container {
 	background-color: #fff;
-	max-width: 880px;
+	max-width: auto;
 	border-radius: 0.5em;
 	margin-top: 2em;
 	padding-bottom: 2em;
@@ -49,8 +49,9 @@ h6 {
 	/*border-right: solid 1px #ccc;*/
 }
 #view > img {
-	max-width: 780px;
-	padding: 2em;
+	margin-top: 1em;
+	width: 40em;
+	padding-left: 8em;
 }
 #control {
 	text-align: center;
@@ -67,6 +68,9 @@ h6 {
 	list-style-type: none;
 	text-align: left;
 }
+#frame-select li {
+	font-size: 1em;
+}
 #frame-select a {
 	color: #aaa;
 }
@@ -75,9 +79,13 @@ h6 {
 }
 #frame-select .active {
 	list-style-image: url('play.svg');
+	line-height: 2em;
 }
 #frame-select .active a {
 	color: #2a6496;
+	font-size: 1.2em;
+	vertical-align: middle;
+	margin-bottom: 0.5em;
 }
 #details {
 	padding-bottom: 2em;
@@ -99,45 +107,39 @@ h6 {
 #details .section {
 	border-bottom: 1px solid #888;
 }
-.btn-nav {
-	margin-bottom: 2em;
-
+#btn-nav {
+	padding: 1em 0 1em 2em;
+	margin-right: 2em;
 }
 .btn-grp {
-	position: relative;
+	width: 14em;
+	padding: 0;
+	/*position: relative;
 	margin: 0 auto;
 	margin-top:0.5em;
 	width: 9em;
-	height: 2em;
+	height: 2em;*/
+
+}
+.btn > img {
+	height: 1em;
+	width: 1em;
+	display: block;
+}
+.btn {
+	display: inline-block;
+	height: 3em;
 	background-color: whiteSmoke;
 	border: 1px solid #E3E3E3;
 	border-radius: 4px;
 	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	padding: 1em;
 }
-.btn-play {
-	position: absolute;
-	bottom: 0.6em;
-	left: 5.2em;
-	width: 0.8em;
-}
-.btn-stop {
-	position: absolute;
-	bottom: 0.6em;
-	left: 3.2em;
-	width: 0.8em;
-}
-.btn-left {
-	position: absolute;
-	bottom: 0.6em;
-	left: 1.2em;
-	height: 0.8em;
-}
-.btn-right {
-	position: absolute;
-	bottom: 0.6em;
-	left: 7.2em;
-	height: 0.8em;
+.btn:hover {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
 }
 table {
 	margin-left: 2em;
@@ -148,7 +150,7 @@ table th {
 table td, table td {
 	padding: 0.2em;
 	line-height: 1em;
-	vertical-align: top;
+	vertical-align: middle;
 	text-align: left;
 }
 table input {

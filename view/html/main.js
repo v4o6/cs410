@@ -4,10 +4,9 @@ var delay = 1600;
 var FrameStates = new Array();
 var Frames = new Array();
 
-function ChangeView(obj,index) {
+function ChangeView(obj) {
 	var view = document.getElementById("view");
-	if (!index)
-		var index = obj.href.substring(obj.href.lastIndexOf('#') + 1);
+	var index = obj.href.substring(obj.href.lastIndexOf('#') + 1);
 	// Change image.
 	filename = Frames[index];
 	view.firstElementChild.src = image_root + filename;
