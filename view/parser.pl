@@ -20,14 +20,14 @@ my @graphs = ();
 
 # HTML interface vars.
 my $html;
-my @thread_state;
+my $html_graph_selector;
+my $html_js;
 
 sub Init {
 	system('rm -fr img');
 	system('rm -fr dot');
 	mkdir 'img';
 	mkdir 'dot';
-	@thread_state = ();
 }
 
 sub AppendHeader {
@@ -49,46 +49,34 @@ sub AppendProgramName {
 }
 
 sub AppendView {
-	return '<div class="row">			
+	return "<div class=\"row\">			
 		<!-- Image Section -->
-		<div id="view" class="col-md-8">
-			<img src="../img/output001.png" alt="">
-		</div>';
+		<div id=\"view\" class=\"col-md-8\">
+			<img src=\"\" alt=\"\">
+		</div>";
 }
 
-sub AppendGraphSelector {
+sub AppendGraphSelectorHeader {
 	return '<!-- View Section -->
 		<div id="control" class="col-md-4">
 			<div id="frame-select" class="row btm-border">
-				<ul>
-					<li class="active"><a href="#output001.png" onclick="ChangeView(this)">1. pthread_create</a></li>
-					<li><a href="#output002.png" onclick="ChangeView(this);">2. lock</a></li>
-					<li><a href="#output003.png" onclick="ChangeView(this);">3. pthread_create</a></li>
-					<li><a href="#output004.png" onclick="ChangeView(this);">4. update</a></li>
-				</ul>
-			</div>';
+				<ul id="frame-select-list">';
+}
+
+sub AppendGraphSelector {
+	return $html_graph_selector;
+}
+
+sub AppendGraphSelectorFooter {
+	return '</ul>
+		</div>';
 }
 
 sub AppendGraphDetails {
 	return '<div id="details" class="row btm-border">
-		<table>
-			<tr>
-				<th>Method</th><td>pthread_create</td>
-			</tr>
-			<tr>
-				<th>File</th><td>main.c</td>
-			</tr>
-			<tr>
-				<th>Line</th><td>128</td>
-			</tr>
-			<tr>
-				<th>Thread ID</th><td>Thread2</td>
-			</tr>
-			<tr>
-				<th>Parent ID</th><td>Thread1</td>
-			</tr>
-		</table>
-	</div>';
+			<table>
+			</table>
+		</div>';
 }
 
 sub AppendButtonNav {
@@ -99,6 +87,9 @@ sub AppendButtonNav {
 							<img class="btn-play" onclick="Timer(\'start\');" src="play.svg" alt=""/>
 							<img class="btn-right" onclick="StepFrame(\'next\');"src="step-forward.svg" alt=""/>
 						</div>
+						<table style="display:inline;">
+							<tr><td>Delay(ms)</td><td><input type="text" onkeypress="TimerDelay(this);" value="1600"/></td></tr>
+						</table>
 					</div>
 				</div>
 
@@ -107,22 +98,35 @@ sub AppendButtonNav {
 }
 
 sub AppendScripts {
-	return '<script src="main.js"></script>
-		</body>
-		</html>';
+	return "<script src=\"main.js\"></script>
+			<script>
+				var abc;
+				$html_js
+				abc = document.getElementById('frame-select-list').firstChild.firstChild;
+				ChangeView(document.getElementById('frame-select-list').firstChild.firstChild);
+			</script>
+			</body>
+		</html>"; 
 }
 
 sub BuildInterface {
 	my $html = AppendHeader;
 	$html .= AppendProgramName('Program Name');
 	$html .= AppendView;
+	$html .= AppendGraphSelectorHeader;
 	$html .= AppendGraphSelector;
+	$html .= AppendGraphSelectorFooter;
 	$html .= AppendGraphDetails;
 	$html .= AppendButtonNav;
 	$html .= AppendScripts;
 	open (INTERFACE, ">", "html/index.html");
 	print INTERFACE $html;
 	close (INTERFACE);
+}
+
+sub PNGFileName {
+	my $num = sprintf("%03d", $_[0]);
+	return "output$num.png";
 }
 
 sub DrawLegend {
@@ -164,13 +168,20 @@ sub GetThreadID {
 	return $_;
 }
 
-sub UpdateHTML {
-	#foreach my $key (keys %objects) {
-	#	push $thread_state, array(
-	#		Type => $objects{$key}{'Type'},
-	#		Status => $objects{$key}{'Status'},
+sub WriteHTMLSelector {
+	if ($_[2]) {
+		$html_graph_selector .= "<li class=\"active\"><a href=\"#$_[1]\" onclick=\"ChangeView(this);\">$_[0]</a></li>\n";
+	}
+	else {
+		$html_graph_selector .= "<li><a href=\"#$_[1]\" onclick=\"ChangeView(this);\">$_[0]</a></li>\n";
+	}
+}
 
-	print Dumper(\%objects);
+sub WriteHTMLDetails {
+	foreach my $key (keys %objects) {
+		$html_js .= "LoadStateView($_[1],\"$_[0]\");\n";
+		$html_js .= "LoadState($_[1] -1,\"$key\",\"$objects{$key}{'Type'}\",\"$objects{$key}{'Status'}\");";
+	}
 }
 
 sub WriteDOTFile {
@@ -518,9 +529,14 @@ while (<LOGFILE>) {
 	my $filename = &WriteDOTFile($count);
 	&DrawPNG($filename, $count);
 
-	# Updates data structures to be written into $html later.
-	# $html is printed after this loop.
-	&UpdateHTML($count);
+	if (1 == $count) {
+		&WriteHTMLSelector(&PNGFileName($count),$count,1);
+	}
+	else {
+		&WriteHTMLSelector(&PNGFileName($count),$count,0);
+	}
+
+	&WriteHTMLDetails(&PNGFileName($count),$count);
 
 	$count++;
 }

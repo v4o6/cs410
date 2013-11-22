@@ -11,45 +11,82 @@
 		</div><div class="row">			
 		<!-- Image Section -->
 		<div id="view" class="col-md-8">
-			<img src="../img/output001.png" alt="">
+			<img src="" alt="">
 		</div><!-- View Section -->
 		<div id="control" class="col-md-4">
 			<div id="frame-select" class="row btm-border">
-				<ul>
-					<li class="active"><a href="#output001.png" onclick="ChangeView(this)">1. pthread_create</a></li>
-					<li><a href="#output002.png" onclick="ChangeView(this);">2. lock</a></li>
-					<li><a href="#output003.png" onclick="ChangeView(this);">3. pthread_create</a></li>
-					<li><a href="#output004.png" onclick="ChangeView(this);">4. update</a></li>
-				</ul>
-			</div><div id="details" class="row btm-border">
-		<table>
-			<tr>
-				<th>Method</th><td>pthread_create</td>
-			</tr>
-			<tr>
-				<th>File</th><td>main.c</td>
-			</tr>
-			<tr>
-				<th>Line</th><td>128</td>
-			</tr>
-			<tr>
-				<th>Thread ID</th><td>Thread2</td>
-			</tr>
-			<tr>
-				<th>Parent ID</th><td>Thread1</td>
-			</tr>
-		</table>
-	</div><div id="btn-nav" class="row">
+				<ul id="frame-select-list"><li class="active"><a href="#1" onclick="ChangeView(this);">output001.png</a></li>
+<li><a href="#2" onclick="ChangeView(this);">output002.png</a></li>
+<li><a href="#3" onclick="ChangeView(this);">output003.png</a></li>
+<li><a href="#4" onclick="ChangeView(this);">output004.png</a></li>
+<li><a href="#5" onclick="ChangeView(this);">output005.png</a></li>
+<li><a href="#6" onclick="ChangeView(this);">output006.png</a></li>
+<li><a href="#7" onclick="ChangeView(this);">output007.png</a></li>
+<li><a href="#8" onclick="ChangeView(this);">output008.png</a></li>
+<li><a href="#9" onclick="ChangeView(this);">output009.png</a></li>
+<li><a href="#10" onclick="ChangeView(this);">output010.png</a></li>
+</ul>
+		</div><div id="details" class="row btm-border">
+			<table>
+			</table>
+		</div><div id="btn-nav" class="row">
 						<div class="btn-grp">
 							<img class="btn-left" onclick="StepFrame('back');"src="step-backward.svg" alt=""/>
 							<img class="btn-stop" onclick="Timer('stop');" src="stop.svg" alt=""/>
 							<img class="btn-play" onclick="Timer('start');" src="play.svg" alt=""/>
 							<img class="btn-right" onclick="StepFrame('next');"src="step-forward.svg" alt=""/>
 						</div>
+						<table style="display:inline;">
+							<tr><td>Delay(ms)</td><td><input type="text" onkeypress="TimerDelay(this);" value="1600"/></td></tr>
+						</table>
 					</div>
 				</div>
 
 			</div>
 		</div><script src="main.js"></script>
-		</body>
+			<script>
+				var abc;
+				LoadStateView(1,"output001.png");
+LoadState(1 -1,"Thread1","Thread","Alive");LoadStateView(1,"output001.png");
+LoadState(1 -1,"Thread2","Thread","Alive");LoadStateView(2,"output002.png");
+LoadState(2 -1,"Thread1","Thread","Alive");LoadStateView(2,"output002.png");
+LoadState(2 -1,"Thread2","Thread","Alive");LoadStateView(3,"output003.png");
+LoadState(3 -1,"Thread3","Thread","Alive");LoadStateView(3,"output003.png");
+LoadState(3 -1,"Thread1","Thread","Alive");LoadStateView(3,"output003.png");
+LoadState(3 -1,"Thread2","Thread","Alive");LoadStateView(4,"output004.png");
+LoadState(4 -1,"Thread3","Thread","Alive");LoadStateView(4,"output004.png");
+LoadState(4 -1,"Thread1","Thread","Alive");LoadStateView(4,"output004.png");
+LoadState(4 -1,"Thread2","Thread","Alive");LoadStateView(5,"output005.png");
+LoadState(5 -1,"Thread3","Thread","Alive");LoadStateView(5,"output005.png");
+LoadState(5 -1,"Thread1","Thread","Alive");LoadStateView(5,"output005.png");
+LoadState(5 -1,"Mutex1","Mutex","Unlocked");LoadStateView(5,"output005.png");
+LoadState(5 -1,"Thread2","Thread","Alive");LoadStateView(6,"output006.png");
+LoadState(6 -1,"Thread3","Thread","Alive");LoadStateView(6,"output006.png");
+LoadState(6 -1,"Thread1","Thread","Alive");LoadStateView(6,"output006.png");
+LoadState(6 -1,"Mutex1","Mutex","Locked");LoadStateView(6,"output006.png");
+LoadState(6 -1,"Thread2","Thread","Alive");LoadStateView(7,"output007.png");
+LoadState(7 -1,"Thread3","Thread","Dead");LoadStateView(7,"output007.png");
+LoadState(7 -1,"Thread1","Thread","Alive");LoadStateView(7,"output007.png");
+LoadState(7 -1,"Mutex1","Mutex","Locked");LoadStateView(7,"output007.png");
+LoadState(7 -1,"Thread2","Thread","Alive");LoadStateView(8,"output008.png");
+LoadState(8 -1,"Thread4","Thread","Alive");LoadStateView(8,"output008.png");
+LoadState(8 -1,"Thread3","Thread","Dead");LoadStateView(8,"output008.png");
+LoadState(8 -1,"Thread1","Thread","Alive");LoadStateView(8,"output008.png");
+LoadState(8 -1,"Mutex1","Mutex","Locked");LoadStateView(8,"output008.png");
+LoadState(8 -1,"Thread2","Thread","Alive");LoadStateView(9,"output009.png");
+LoadState(9 -1,"Thread4","Thread","Alive");LoadStateView(9,"output009.png");
+LoadState(9 -1,"Thread3","Thread","Dead");LoadStateView(9,"output009.png");
+LoadState(9 -1,"Thread1","Thread","Alive");LoadStateView(9,"output009.png");
+LoadState(9 -1,"Mutex1","Mutex","Locked");LoadStateView(9,"output009.png");
+LoadState(9 -1,"Thread2","Thread","Alive");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Thread4","Thread","Alive");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Spinlock1","Spinlock","Unlocked");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Thread3","Thread","Dead");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Thread1","Thread","Alive");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Mutex1","Mutex","Locked");LoadStateView(10,"output010.png");
+LoadState(10 -1,"Thread2","Thread","Alive");
+				abc = document.getElementById('frame-select-list').firstChild.firstChild;
+				ChangeView(document.getElementById('frame-select-list').firstChild.firstChild);
+			</script>
+			</body>
 		</html>
