@@ -20,14 +20,14 @@ my @graphs = ();
 
 # HTML interface vars.
 my $html;
-my @thread_state;
+my $html_graph_selector;
+my $html_js;
 
 sub Init {
 	system('rm -fr img');
 	system('rm -fr dot');
 	mkdir 'img';
 	mkdir 'dot';
-	@thread_state = ();
 }
 
 sub AppendHeader {
@@ -49,80 +49,89 @@ sub AppendProgramName {
 }
 
 sub AppendView {
-	return '<div class="row">			
+	return "<div class=\"row\">			
 		<!-- Image Section -->
-		<div id="view" class="col-md-8">
-			<img src="../img/output001.png" alt="">
-		</div>';
-}
-
-sub AppendGraphSelector {
-	return '<!-- View Section -->
-		<div id="control" class="col-md-4">
-			<div id="frame-select" class="row btm-border">
-				<ul>
-					<li class="active"><a href="#output001.png" onclick="ChangeView(this)">1. pthread_create</a></li>
-					<li><a href="#output002.png" onclick="ChangeView(this);">2. lock</a></li>
-					<li><a href="#output003.png" onclick="ChangeView(this);">3. pthread_create</a></li>
-					<li><a href="#output004.png" onclick="ChangeView(this);">4. update</a></li>
-				</ul>
-			</div>';
-}
-
-sub AppendGraphDetails {
-	return '<div id="details" class="row btm-border">
-		<table>
-			<tr>
-				<th>Method</th><td>pthread_create</td>
-			</tr>
-			<tr>
-				<th>File</th><td>main.c</td>
-			</tr>
-			<tr>
-				<th>Line</th><td>128</td>
-			</tr>
-			<tr>
-				<th>Thread ID</th><td>Thread2</td>
-			</tr>
-			<tr>
-				<th>Parent ID</th><td>Thread1</td>
-			</tr>
-		</table>
-	</div>';
+		<div id=\"view\" class=\"col-md-8\">
+			<img src=\"\" alt=\"\">
+		</div>";
 }
 
 sub AppendButtonNav {
-	return '<div id="btn-nav" class="row">
-						<div class="btn-grp">
-							<img class="btn-left" onclick="StepFrame(\'back\');"src="step-backward.svg" alt=""/>
-							<img class="btn-stop" onclick="Timer(\'stop\');" src="stop.svg" alt=""/>
-							<img class="btn-play" onclick="Timer(\'start\');" src="play.svg" alt=""/>
-							<img class="btn-right" onclick="StepFrame(\'next\');"src="step-forward.svg" alt=""/>
+	return '<div id="control" class="col-md-4">
+		<div id="btn-nav" class="row btm-border">
+			<div class="btn-grp">
+				<div class="btn" onclick="StepFrame(\'back\');"><img src="step-backward.svg" alt=""/></div>
+				<div class="btn" onclick="Timer(\'stop\');"><img src="stop.svg" alt=""/></div>
+				<div class="btn" onclick="Timer(\'start\');"><img src="play.svg" alt=""/></div>
+				<div class="btn" onclick="StepFrame(\'next\');"><img src="step-forward.svg" alt=""/></div>
+			</div>
+			<!--table style="margin:0.5em;">
+				<tr><td>Step Speed(ms)</td><td><input type="text" onkeypress="TimerDelay(this);" value="1600"/></td></tr>
+			</table-->
+		</div>';
+}
+
+sub AppendGraphSelectorHeader {
+	return '<!-- View Section -->
+			<div id="frame-select" class="row btm-border">
+				<ul id="frame-select-list">';
+}
+
+sub AppendGraphSelector {
+	return $html_graph_selector;
+}
+
+sub AppendGraphSelectorFooter {
+	return '</ul>
+		</div>';
+}
+
+sub AppendGraphDetails {
+	return '<div id="details" class="row">
+								<table>
+								</table>
+							</div>
 						</div>
-					</div>
-				</div>
 
 			</div>
 		</div>';
 }
 
 sub AppendScripts {
-	return '<script src="main.js"></script>
-		</body>
-		</html>';
+	return "<script src=\"main.js\"></script>
+			<script>
+				var abc;
+				$html_js
+				abc = document.getElementById('frame-select-list').firstChild.firstChild;
+				ChangeView(document.getElementById('frame-select-list').firstChild.firstChild);
+			</script>
+			</body>
+		</html>"; 
 }
 
 sub BuildInterface {
 	my $html = AppendHeader;
 	$html .= AppendProgramName('Program Name');
 	$html .= AppendView;
-	$html .= AppendGraphSelector;
-	$html .= AppendGraphDetails;
 	$html .= AppendButtonNav;
+	$html .= AppendGraphSelectorHeader;
+	$html .= AppendGraphSelector;
+	$html .= AppendGraphSelectorFooter;
+	$html .= AppendGraphDetails;
 	$html .= AppendScripts;
 	open (INTERFACE, ">", "html/index.html");
 	print INTERFACE $html;
 	close (INTERFACE);
+}
+
+sub PNGFileName {
+	my $num = sprintf("%03d", $_[0]);
+	return "output$num.png";
+}
+
+sub SVGFileName {
+	my $num = sprintf("%03d", $_[0]);
+	return "output$num.svg";
 }
 
 sub DrawLegend {
@@ -164,13 +173,20 @@ sub GetThreadID {
 	return $_;
 }
 
-sub UpdateHTML {
-	#foreach my $key (keys %objects) {
-	#	push $thread_state, array(
-	#		Type => $objects{$key}{'Type'},
-	#		Status => $objects{$key}{'Status'},
+sub WriteHTMLSelector {
+	if ($_[2]) {
+		$html_graph_selector .= "<li class=\"active\"><a href=\"#$_[1]\" onclick=\"ChangeView(this);\">$_[0]</a></li>\n";
+	}
+	else {
+		$html_graph_selector .= "<li><a href=\"#$_[1]\" onclick=\"ChangeView(this);\">$_[0]</a></li>\n";
+	}
+}
 
-	print Dumper(\%objects);
+sub WriteHTMLDetails {
+	foreach my $key (keys %objects) {
+		$html_js .= "LoadStateView($_[1],\"$_[0]\");\n";
+		$html_js .= "LoadState($_[1] -1,\"$key\",\"$objects{$key}{'Type'}\",\"$objects{$key}{'Status'}\");";
+	}
 }
 
 sub WriteDOTFile {
@@ -179,7 +195,7 @@ sub WriteDOTFile {
 	my $dotFilename = "graph".$num.".dot";
 	open (GRAPHFILE, ">", "dot/".$dotFilename);
 	print GRAPHFILE "digraph G {\n";
-	print GRAPHFILE "graph[center=1];\n";
+	print GRAPHFILE "graph[center=true];\n";
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
 			if ($objects{$key}{'Status'} eq "Alive") {
@@ -303,6 +319,13 @@ sub DrawPNG {
 	system($cmd);
 }
 
+sub DrawSVG{
+	# Pad number with leading zeros.
+	my $num = sprintf("%03d", $_[1]);
+	my $cmd = 'dot -Tsvg dot/'. $_[0] .' > img/output' . $num . '.svg';
+	system($cmd);
+}
+
 sub CreateGIF {
 	system('convert -delay 100 -loop 0 img/output*.png img/view.gif');
 }
@@ -310,7 +333,10 @@ sub CreateGIF {
 &Init();
 # All variable names currently temporary.
 open (TIMESTAMPS, ">", "timestamps.txt");
-open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
+
+#open (LOGFILE, "logfile.txt") or die "Could not find specified logfile.";
+open (LOGFILE, "../libthreadtrace/libthreadtrace.log") or die "Could not find specified logfile.";
+
 $count = 1;
 while (<LOGFILE>) {
 	# Read a max of 100 lines
@@ -400,7 +426,8 @@ while (<LOGFILE>) {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condlock';
-			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlock';
+			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlocked';
+			$objects{$arguments[1]}{'Status'} = 'Unlocked';
 		}
 	}
 	# should handle pthread_cond_signal coming in which trigger the exit call of cond wait
@@ -409,6 +436,7 @@ while (<LOGFILE>) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condunlock';
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'lock';
+			$objects{$arguments[1]}{'Status'} = 'Locked';
 		}	
 	}
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
@@ -442,7 +470,7 @@ while (<LOGFILE>) {
 				$objects{$arguments[0]}{'Status'} = 'Unused';
 				$objects{$arguments[0]}{'Count'} = 0;
 				foreach my $thread (@{$objects{$arguments[0]}{'Threads Waiting'}}) {
-					$objects{$callingThread}{'Links'}{$thread} = 'maxed barrier';
+					$objects{$thread}{'Links'}{$arguments[0]} = 'maxed barrier';
 				}
 				$objects{$arguments[0]}{'Threads Waiting'} = @empty;	 
 			}
@@ -516,11 +544,16 @@ while (<LOGFILE>) {
 	}
 
 	my $filename = &WriteDOTFile($count);
-	&DrawPNG($filename, $count);
+	&DrawSVG($filename, $count);
 
-	# Updates data structures to be written into $html later.
-	# $html is printed after this loop.
-	&UpdateHTML($count);
+	if (1 == $count) {
+		&WriteHTMLSelector(&SVGFileName($count),$count,1);
+	}
+	else {
+		&WriteHTMLSelector(&SVGFileName($count),$count,0);
+	}
+
+	&WriteHTMLDetails(&SVGFileName($count),$count);
 
 	$count++;
 }

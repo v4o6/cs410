@@ -124,10 +124,6 @@ sub {
   bottom: -0.25em;
 }
 
-img {
-  border: 0;
-}
-
 svg:not(:root) {
   overflow: hidden;
 }
@@ -243,12 +239,8 @@ table {
   thead {
     display: table-header-group;
   }
-  tr,
-  img {
+  tr {
     page-break-inside: avoid;
-  }
-  img {
-    max-width: 100% !important;
   }
   @page  {
     margin: 2cm .5cm;
@@ -269,10 +261,6 @@ table {
   .table td,
   .table th {
     background-color: #fff !important;
-  }
-  .btn > .caret,
-  .dropup > .btn > .caret {
-    border-top-color: #000 !important;
   }
   .label {
     border: 1px solid #000;
@@ -323,14 +311,8 @@ textarea {
   background-image: none;
 }
 
-img {
-  vertical-align: middle;
-}
-
 .img-responsive {
   display: block;
-  height: auto;
-  max-width: 100%;
 }
 
 .img-rounded {
@@ -1965,46 +1947,6 @@ textarea.input-lg {
   .form-horizontal .control-label {
     text-align: right;
   }
-}
-
-.btn {
-  display: inline-block;
-  padding: 6px 12px;
-  margin-bottom: 0;
-  font-size: 14px;
-  font-weight: normal;
-  line-height: 1.428571429;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  cursor: pointer;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-       -o-user-select: none;
-          user-select: none;
-}
-
-.btn:focus {
-  outline: thin dotted #333;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
-.btn:hover,
-.btn:focus {
-  color: #333333;
-  text-decoration: none;
-}
-
-.btn:active,
-.btn.active {
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-          box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
 .btn.disabled,
@@ -4882,11 +4824,6 @@ a.badge:focus {
   cursor: pointer;
 }
 
-.btn .badge {
-  position: relative;
-  top: -1px;
-}
-
 a.list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
   color: #428bca;
@@ -5474,19 +5411,6 @@ body.modal-open,
   clear: both;
 }
 
-.modal-footer .btn + .btn {
-  margin-bottom: 0;
-  margin-left: 5px;
-}
-
-.modal-footer .btn-group .btn + .btn {
-  margin-left: -1px;
-}
-
-.modal-footer .btn-block + .btn-block {
-  margin-left: 0;
-}
-
 @media screen and (min-width: 768px) {
   .modal-dialog {
     right: auto;
@@ -5926,10 +5850,6 @@ body.modal-open,
   color: #ffffff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-.carousel-caption .btn {
-  text-shadow: none;
 }
 
 @media screen and (min-width: 768px) {
