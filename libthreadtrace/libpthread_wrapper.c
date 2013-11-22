@@ -702,9 +702,9 @@ _init(void)
 
   char *program_name = strrchr(path, '/');
   if (program_name != NULL)
-    fprintf(log_fp, "program_name: %s\n", program_name + 1);
+    fprintf(log_fp, "%s\n", program_name + 1);
   else
-    fprintf(log_fp, "program_name: %s\n", path);
+    fprintf(log_fp, "%s\n", path);
 
   // delink targeted pthread functions to override them with our own
   orig_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
