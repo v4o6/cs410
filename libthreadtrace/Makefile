@@ -1,6 +1,6 @@
 CC  = gcc
 
-TARGET		= thread-pool-server #producer_consumer
+TARGET		= thread-pool-server # producer_consumer
 TARGET_SRC	= handler_thread.c handler_threads_pool.c main.c requests_queue.c #producer_consumer.c
 TARGET_OBJ      = $(TARGET_SRC:%.c=%.o)
 TARGET_FLAGS	= -rdynamic -lpthread -Wall -Wno-unused-but-set-variable
