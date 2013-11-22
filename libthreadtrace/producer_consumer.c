@@ -129,8 +129,9 @@ int main()
     printf("Error creating the producer thread..\n");
 
   // Wait for consumer/producer to exit. 
-  for (i= 0; i < 2; i ++)
-  pthread_join(t[i], NULL);
+  for (i= 0; i < 2; i ++) {
+    pthread_join(t[i], NULL);
+  }
 
   // printf("Done..\n");
 
