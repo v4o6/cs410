@@ -756,7 +756,7 @@ void log_func_enter(pthread_t tid, char *func_name, char *args) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts); 
 
-    fprintf(log_fp, "%lld.%.9ld Thread%x ENTER\t%s\t%s -\n",
+    fprintf(log_fp, "%lld.%.9ld Thread%x ENTER %s %s -\n",
 	    (long long)ts.tv_sec, ts.tv_nsec,
 	    (unsigned int)tid, func_name, args);
     log_count++;
@@ -768,7 +768,7 @@ void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts); 
 
-    fprintf(log_fp, "%lld.%.9ld Thread%x EXIT\t%s\t%s %d\n",
+    fprintf(log_fp, "%lld.%.9ld Thread%x EXIT %s %s %d\n",
 	    (long long)ts.tv_sec, ts.tv_nsec,
 	    (unsigned int)tid, func_name, args, ret);
     log_count++;
