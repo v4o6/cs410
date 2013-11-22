@@ -13,6 +13,8 @@
 #define MAX_BUF_LEN	(128)
 static char func_buf[MAX_BUF_LEN] = {0};
 static char arg_buf[MAX_BUF_LEN] = {0};
+#define MAX_LOG_LINES	(1024)
+static int log_count = 0;
 
 FILE *log_fp;
 void log_func_enter(pthread_t tid, char *func_name, char *args);
@@ -655,7 +657,7 @@ _init(void)
   }
 
   // open a file for logging and log program name
-  log_fp = fopen("threadtrace.log", "w");
+  log_fp = fopen("/tmp/libthreadtrace.log", "w");
 
   char *program_name = strrchr(path, '/');
   if (program_name != NULL)
@@ -710,20 +712,26 @@ _fini()
 }
 
 void log_func_enter(pthread_t tid, char *func_name, char *args) {
-  struct timespec ts;
-  clock_gettime(CLOCK_REALTIME, &ts); 
+  if (log_count < MAX_LOG_LINES) {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts); 
 
-  fprintf(log_fp, "%lld.%.9ld Thread%u ENTER %s %s -\n",
-	  (long long)ts.tv_sec, ts.tv_nsec,
-	  (unsigned int)tid, func_name, args);
+    fprintf(log_fp, "%lld.%.9ld Thread%u ENTER %s %s -\n",
+	    (long long)ts.tv_sec, ts.tv_nsec,
+	    (unsigned int)tid, func_name, args);
+    log_count++;
+  }
 }
 
 void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) {
-  struct timespec ts;
-  clock_gettime(CLOCK_REALTIME, &ts); 
+  if (log_count < MAX_LOG_LINES) {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts); 
 
-  fprintf(log_fp, "%lld.%.9ld Thread%u EXIT %s %s %d\n",
-	  (long long)ts.tv_sec, ts.tv_nsec,
-	  (unsigned int)tid, func_name, args, ret);
+    fprintf(log_fp, "%lld.%.9ld Thread%u EXIT %s %s %d\n",
+	    (long long)ts.tv_sec, ts.tv_nsec,
+	    (unsigned int)tid, func_name, args, ret);
+    log_count++;
+  }
 }
 
