@@ -686,8 +686,8 @@ pthread_t th;
 void
 _init(void) 
 {
-  char link[MAX_BUF_LEN] = {0};
-  char path[MAX_BUF_LEN] = {0};
+  static char link[MAX_BUF_LEN] = {0};
+  static char path[MAX_BUF_LEN] = {0};
   pid_t pid = getpid();
   sprintf(link, "/proc/%d/exe", pid);
 
