@@ -4,6 +4,7 @@
 # will look like.
 use strict;
 use warnings;
+use Data::Dumper;
 
 # Globals
 my $timestamp;
@@ -17,11 +18,16 @@ my %objects;
 my $count;
 my @graphs = ();
 
+# HTML interface vars.
+my $html;
+my @thread_state;
+
 sub Init {
 	system('rm -fr img');
 	system('rm -fr dot');
 	mkdir 'img';
 	mkdir 'dot';
+	@thread_state = ();
 }
 
 sub AppendHeader {
@@ -156,6 +162,15 @@ sub GetThreadID {
 	#@arguments = split ',', $argumentList;
 	# ...
 	return $_;
+}
+
+sub UpdateHTML {
+	#foreach my $key (keys %objects) {
+	#	push $thread_state, array(
+	#		Type => $objects{$key}{'Type'},
+	#		Status => $objects{$key}{'Status'},
+
+	print Dumper(\%objects);
 }
 
 sub WriteDOTFile {
@@ -502,6 +517,11 @@ while (<LOGFILE>) {
 
 	my $filename = &WriteDOTFile($count);
 	&DrawPNG($filename, $count);
+
+	# Updates data structures to be written into $html later.
+	# $html is printed after this loop.
+	&UpdateHTML($count);
+
 	$count++;
 }
 
