@@ -33,5 +33,5 @@ libpthread_wrapper.o: libpthread_wrapper.c
 
 .IGNORE: clean 
 clean:
-	@rm -r $(TARGET) libpthread_wrapper.so *.o 2> /dev/null
+	@rm -f $(TARGET) libpthread_wrapper.so *.o 2> /dev/null
 
