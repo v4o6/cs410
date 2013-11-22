@@ -540,7 +540,7 @@ pthread_spinlock_t *lock;
 int pshared;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void*)lock);
 
   sprintf(arg_buf, "(Spin%lx->%s,%d)", (unsigned long)lock, lock_name, pshared);
   log_func_enter(self, "pthread_spin_init", arg_buf);
@@ -556,7 +556,7 @@ pthread_spin_destroy (lock)
 pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void*)lock);
 
   sprintf(arg_buf, "(Spin%lx->%s)", (unsigned long)lock, lock_name);
   log_func_enter(self, "pthread_spin_destroy", arg_buf);
@@ -572,7 +572,7 @@ pthread_spin_lock (lock)
 pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void*)lock);
 
   sprintf(arg_buf, "(Spin%lx->%s)", (unsigned long)lock, lock_name);
   log_func_enter(self, "pthread_spin_lock", arg_buf);
@@ -589,7 +589,7 @@ pthread_spin_trylock (lock)
 pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void*)lock);
 
   sprintf(arg_buf, "(Spin%lx->%s)", (unsigned long)lock, lock_name);
   log_func_enter(self, "pthread_spin_trylock", arg_buf);
@@ -604,7 +604,7 @@ int pthread_spin_unlock (lock)
 pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void*)lock);
 
   sprintf(arg_buf, "(Spin%lx->%s)", (unsigned long)lock, lock_name);
   log_func_enter(self, "pthread_spin_unlock", arg_buf);
