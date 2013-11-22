@@ -4,6 +4,7 @@
 # will look like.
 use strict;
 use warnings;
+use Data::Dumper;
 
 # Globals
 my $timestamp;
@@ -15,10 +16,113 @@ my $stackOrReturn;
 my @arguments;
 my %objects;
 my $count;
+my @graphs = ();
+
+# HTML interface vars.
+my $html;
+my @thread_state;
 
 sub Init {
 	system('rm -fr img');
+	system('rm -fr dot');
 	mkdir 'img';
+	mkdir 'dot';
+	@thread_state = ();
+}
+
+sub AppendHeader {
+	return '<!DOCTYPE HTML>
+		<html>
+		<head>
+			<title>CS410 Thread Visualizer</title>
+			<link href="bootstrap.css" rel="stylesheet">
+			<link href="style.css" rel="stylesheet">
+		</head>
+		<body>
+			<div class="container shadow">';
+}
+
+sub AppendProgramName {
+	return '<div id="header" class="row btm-border">
+			<h4>'.$_[0].'</h4>
+		</div>';
+}
+
+sub AppendView {
+	return '<div class="row">			
+		<!-- Image Section -->
+		<div id="view" class="col-md-8">
+			<img src="../img/output001.png" alt="">
+		</div>';
+}
+
+sub AppendGraphSelector {
+	return '<!-- View Section -->
+		<div id="control" class="col-md-4">
+			<div id="frame-select" class="row btm-border">
+				<ul>
+					<li class="active"><a href="#output001.png" onclick="ChangeView(this)">1. pthread_create</a></li>
+					<li><a href="#output002.png" onclick="ChangeView(this);">2. lock</a></li>
+					<li><a href="#output003.png" onclick="ChangeView(this);">3. pthread_create</a></li>
+					<li><a href="#output004.png" onclick="ChangeView(this);">4. update</a></li>
+				</ul>
+			</div>';
+}
+
+sub AppendGraphDetails {
+	return '<div id="details" class="row btm-border">
+		<table>
+			<tr>
+				<th>Method</th><td>pthread_create</td>
+			</tr>
+			<tr>
+				<th>File</th><td>main.c</td>
+			</tr>
+			<tr>
+				<th>Line</th><td>128</td>
+			</tr>
+			<tr>
+				<th>Thread ID</th><td>Thread2</td>
+			</tr>
+			<tr>
+				<th>Parent ID</th><td>Thread1</td>
+			</tr>
+		</table>
+	</div>';
+}
+
+sub AppendButtonNav {
+	return '<div id="btn-nav" class="row">
+						<div class="btn-grp">
+							<img class="btn-left" onclick="StepFrame(\'back\');"src="step-backward.svg" alt=""/>
+							<img class="btn-stop" onclick="Timer(\'stop\');" src="stop.svg" alt=""/>
+							<img class="btn-play" onclick="Timer(\'start\');" src="play.svg" alt=""/>
+							<img class="btn-right" onclick="StepFrame(\'next\');"src="step-forward.svg" alt=""/>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>';
+}
+
+sub AppendScripts {
+	return '<script src="main.js"></script>
+		</body>
+		</html>';
+}
+
+sub BuildInterface {
+	my $html = AppendHeader;
+	$html .= AppendProgramName('Program Name');
+	$html .= AppendView;
+	$html .= AppendGraphSelector;
+	$html .= AppendGraphDetails;
+	$html .= AppendButtonNav;
+	$html .= AppendScripts;
+	open (INTERFACE, ">", "html/index.html");
+	print INTERFACE $html;
+	close (INTERFACE);
 }
 
 sub DrawLegend {
@@ -60,11 +164,20 @@ sub GetThreadID {
 	return $_;
 }
 
+sub UpdateHTML {
+	#foreach my $key (keys %objects) {
+	#	push $thread_state, array(
+	#		Type => $objects{$key}{'Type'},
+	#		Status => $objects{$key}{'Status'},
+
+	print Dumper(\%objects);
+}
+
 sub WriteDOTFile {
 	#Prints out to our DOT file progressively each line.
 	my $num = sprintf("%03d", $_[0]);
 	my $dotFilename = "graph".$num.".dot";
-	open (GRAPHFILE, ">", $dotFilename);
+	open (GRAPHFILE, ">", "dot/".$dotFilename);
 	print GRAPHFILE "digraph G {\n";
 	print GRAPHFILE "graph[center=1];\n";
 	foreach my $key (keys %objects) {
@@ -186,7 +299,7 @@ sub WriteDOTFile {
 sub DrawPNG {
 	# Pad number with leading zeros.
 	my $num = sprintf("%03d", $_[1]);
-	my $cmd = 'dot -Tpng '. $_[0] .' > img/output' . $num . '.png';
+	my $cmd = 'dot -Tpng dot/'. $_[0] .' > img/output' . $num . '.png';
 	system($cmd);
 }
 
@@ -404,6 +517,11 @@ while (<LOGFILE>) {
 
 	my $filename = &WriteDOTFile($count);
 	&DrawPNG($filename, $count);
+
+	# Updates data structures to be written into $html later.
+	# $html is printed after this loop.
+	&UpdateHTML($count);
+
 	$count++;
 }
 
@@ -411,5 +529,6 @@ while (<LOGFILE>) {
 close (TIMESTAMPS);
 close (LOGFILE);
 
-&CreateGIF();
+#&CreateGIF();
+&BuildInterface();
 exit;

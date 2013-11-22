@@ -1,0 +1,273 @@
+$VAR1 = {
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,'
+                       },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,'
+                       },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,'
+                       },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Unlocked'
+                      },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Mutex1' => 'lock',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Locked'
+                      },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Dead',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Mutex1' => 'lock',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Locked'
+                      },
+          'Thread2' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread4' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Dead',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Mutex1' => 'lock',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Locked'
+                      },
+          'Thread2' => {
+                         'Links' => {
+                                      'Thread4' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread4' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Dead',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Mutex1' => 'lock',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,Thread4,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Locked'
+                      },
+          'Thread2' => {
+                         'Links' => {
+                                      'Thread4' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
+$VAR1 = {
+          'Thread4' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       },
+          'Spinlock1' => {
+                           'Type' => 'Spinlock',
+                           'Status' => 'Unlocked'
+                         },
+          'Thread3' => {
+                         'Links' => {},
+                         'Type' => 'Thread',
+                         'Status' => 'Dead',
+                         'Joins' => ''
+                       },
+          'Thread1' => {
+                         'Links' => {
+                                      'Thread3' => 'child',
+                                      'Mutex1' => 'lock',
+                                      'Thread2' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => 'Thread2,Thread3,Thread4,'
+                       },
+          'Mutex1' => {
+                        'Type' => 'Mutex',
+                        'Status' => 'Locked'
+                      },
+          'Thread2' => {
+                         'Links' => {
+                                      'Thread4' => 'child'
+                                    },
+                         'Type' => 'Thread',
+                         'Status' => 'Alive',
+                         'Joins' => ''
+                       }
+        };
