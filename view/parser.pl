@@ -411,7 +411,8 @@ while (<LOGFILE>) {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condlock';
-			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlock';
+			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlocked';
+			$objects{$arguments[1]}{'Status'} = 'Unlocked';
 		}
 	}
 	# should handle pthread_cond_signal coming in which trigger the exit call of cond wait
@@ -420,6 +421,7 @@ while (<LOGFILE>) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condunlock';
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'lock';
+			$objects{$arguments[1]}{'Status'} = 'Locked';
 		}	
 	}
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
@@ -453,7 +455,7 @@ while (<LOGFILE>) {
 				$objects{$arguments[0]}{'Status'} = 'Unused';
 				$objects{$arguments[0]}{'Count'} = 0;
 				foreach my $thread (@{$objects{$arguments[0]}{'Threads Waiting'}}) {
-					$objects{$callingThread}{'Links'}{$thread} = 'maxed barrier';
+					$objects{$thread}{'Links'}{$arguments[0]} = 'maxed barrier';
 				}
 				$objects{$arguments[0]}{'Threads Waiting'} = @empty;	 
 			}
