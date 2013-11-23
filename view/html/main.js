@@ -3,6 +3,8 @@ var interval = null;
 var delay = 800;
 var FrameStates = new Array();
 var Frames = new Array();
+var currScroll = 0;
+
 
 function ChangeView(obj) {
 	var view = document.getElementById("view");
@@ -63,7 +65,8 @@ function StepFrame(dir) {
 			break;
 	}
 
-	//alert(active.offsetLeft + ' ' + active.offsetTop);
+	if (300 < active.offsetTop);
+		document.getElementById('frame-select').scrollTop += 240;
 }
 
 function Timer(cmd) {
