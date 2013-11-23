@@ -199,16 +199,20 @@ sub WriteDOTFile {
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
 			if ($objects{$key}{'Status'} eq "Alive") {
-				print GRAPHFILE "$key [shape=box,color=black];\n";
+				print GRAPHFILE "$key [color=black];\n";
 			}
 			if ($objects{$key}{'Status'} eq "Dead") {
-				print GRAPHFILE "$key [shape=box,color=lightgray];\n";
+				print GRAPHFILE "$key [color=lightgray];\n";
 			}
 			# break the joins into array after removing trailing commas
 			#$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
 			my @joinedThreads = split ',', $objects{$key}{'Joins'};
 			foreach my $join (@joinedThreads) {
 				print GRAPHFILE "$key -> $join [arrowhead=odot];\n";
+			}
+			my @joinedExitThreads = split ',', $objects{$key}{'Joins Exit'};
+			foreach my $joinedExit (@joinedExitThreads) {
+				print GRAPHFILE "$key -> $joinedExit [arrowtail=odot,color=green,dir=back];\n";
 			}
 			# deals with printing out all edges for threads
 			foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
@@ -223,16 +227,25 @@ sub WriteDOTFile {
 					print GRAPHFILE " [arrowhead=diamond,color=lightgray];\n";
 				}	
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
-					print GRAPHFILE " [arrowhead=normal,color=black];\n";
+					print GRAPHFILE " [arrowhead=normal,color=green,dir=back];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "mutex wait") {
+					print GRAPHFILE " [arrowhead=normal,color=red];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "unlocked") {
 					print GRAPHFILE " [arrowhead=normal,color=lightgray];\n";
 				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "condlock") {
-					print GRAPHFILE " [arrowhead=inv,color=black];\n";
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "condblock") {
+					print GRAPHFILE " [arrowhead=inv,color=red];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condunlock") {
-					print GRAPHFILE " [arrowhead=inv,color=lightgray];\n";
+					print GRAPHFILE " [arrowhead=inv,color=green,dir=back];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
+					print GRAPHFILE " [style=dotted,color=green];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "endsignal") {
+					print GRAPHFILE " [style=dotted,color=lightgray];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "barrier") {
 					print GRAPHFILE " [arrowhead=box,color=black];\n";
@@ -253,13 +266,13 @@ sub WriteDOTFile {
 		}
 		elsif ($objects{$key}{'Type'} eq "Spinlock") {
 			if ($objects{$key}{'Status'} eq "Unlocked") {
-				print GRAPHFILE "$key [shape=ellipse,color=black];\n";
+				print GRAPHFILE "$key [shape=box,color=black];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Locked") {
-				print GRAPHFILE "$key [shape=ellipse,color=red];\n";
+				print GRAPHFILE "$key [shape=box,color=red];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Dead") {
-				print GRAPHFILE "$key [shape=ellipse,color=lightgray]\n";
+				print GRAPHFILE "$key [shape=box,color=lightgray]\n";
 			}
 		}
 		elsif ($objects{$key}{'Type'} eq "Mutex") {
@@ -267,7 +280,7 @@ sub WriteDOTFile {
 				print GRAPHFILE "$key [shape=trapezium,color=black];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Locked") {
-				print GRAPHFILE "$key [shape=trapezium,color=red];\n";
+				print GRAPHFILE "$key [shape=trapezium,color=black];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Dead") {
 				print GRAPHFILE "$key [shape=trapezium,color=lightgray]\n";
@@ -340,7 +353,7 @@ open (LOGFILE, "../libthreadtrace/libthreadtrace.log") or die "Could not find sp
 $count = 1;
 while (<LOGFILE>) {
 	# Read a max of 100 lines
-	if ($count == 100) {
+	if ($count == 300) {
 		last;
 	}
 	chomp;
@@ -365,13 +378,19 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
 		}	
 	}
+	elsif($functionName eq "pthread_join" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Joins Exit'} = $objects{$callingThread}{'Joins Exit'} . "$arguments[0],";
+		}
+	}
 	elsif($functionName eq "pthread_create" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		my %links;
 		$objects{$arguments[0]} = {
-			Type => 'Thread',
-			Status => 'Alive',
-			Joins => '',
-			Links => %links};
+			'Type' => 'Thread',
+			'Status' => 'Alive',
+			'Joins Exit' => '',
+			'Joins' => '',
+			'Links' => %links};
 		if (exists $objects{$callingThread}) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
@@ -379,6 +398,7 @@ while (<LOGFILE>) {
 			$objects{$callingThread} = {'Type' => 'Thread',
 						    'Status' => 'Alive',
 						    'Joins' => '',
+						    'Joins Exit' => '',
 						    'Links' => %links};
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
@@ -396,24 +416,35 @@ while (<LOGFILE>) {
 	}
 	elsif($functionName eq "pthread_mutex_init" && $enterExit eq "ENTER") {
 		$objects{$arguments[0]} = {'Type' => 'Mutex',
-					   'Status' => 'Unlocked'};
+					   'Status' => 'Unlocked',
+					   'Locked by' => ''};
 	}
 	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
+			if ($objects{$arguments[0]}{'Status'} eq "Locked" && $objects{$arguments[0]}{'Locked by'} ne $callingThread) {
+				$objects{$callingThread}{'Links'}{$arguments[0]} = 'mutex wait';
+			}
+		}
+	}
+	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
+		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
+			$objects{$arguments[0]}{'Locked by'} = $callingThread;
 		}
 	}
 	elsif($functionName eq "pthread_mutex_trylock" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
                         $objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
+			$objects{$arguments[0]}{'Locked by'} = $callingThread;
                 }
 	}
 	elsif($functionName eq "pthread_mutex_unlock" && $enterExit eq "ENTER") {
-		$objects{$callingThread}{'Status'} = 'Unlocked';
 		if (exists $objects{$arguments[0]}) {
+			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'unlocked';
+			$objects{$arguments[0]}{'Locked by'} = '';
 		}
 	}	
 	elsif($functionName eq "pthread_mutex_destroy" && $enterExit eq "ENTER") {
@@ -430,19 +461,30 @@ while (<LOGFILE>) {
 	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
-			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condlock';
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condblock';
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlocked';
+			$objects{$callingThread}{'Locked by'} = '';
 			$objects{$arguments[1]}{'Status'} = 'Unlocked';
 		}
 	}
-	# should handle pthread_cond_signal coming in which trigger the exit call of cond wait
 	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $stackOrReturn eq "0" && $enterExit eq "EXIT") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condunlock';
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'lock';
+			$objects{$callingThread}{'Locked by'} = $callingThread;
 			$objects{$arguments[1]}{'Status'} = 'Locked';
 		}	
+	}
+	elsif($functionName eq "pthread_cond_signal" && $enterExit eq "ENTER") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'signal';
+		}
+	}
+	elsif($functionName eq "pthread_cond_signal" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endsignal';
+		}
 	}
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
@@ -559,8 +601,8 @@ while (<LOGFILE>) {
 	}
 
 	&WriteHTMLDetails(&SVGFileName($count),$count);
-
-	$count++;
+	
+	$count++;	
 }
 
 #&DrawLegend();
