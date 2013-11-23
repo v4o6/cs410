@@ -1,5 +1,5 @@
 digraph G {
-graph[center=true, ratio=2];
-Mutex602a40 [shape=trapezium,color=black];
-Cond602a80 [shape=parallelogram,color=black];
+graph[center=true, ratio=1];
+Mutex602a40 [shape=trapezium,color=black,label="Mutex602a40\nrequest_mutex"];
+Cond602a80 [shape=parallelogram,color=black,label="Cond602a80\ngot_request"];
 }
