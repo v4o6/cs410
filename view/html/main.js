@@ -1,6 +1,6 @@
 var image_root = '../img/';
 var interval = null;
-var delay = 1600;
+var delay = 800;
 var FrameStates = new Array();
 var Frames = new Array();
 
@@ -19,10 +19,15 @@ function ChangeView(obj) {
 	var details = document.getElementById('details');
 	var table = details.getElementsByTagName('table')[0];
 	table.innerHTML = "";
+
 	for (i=0; i<FrameStates[index-1].length; i++) {
 		table.innerHTML += '<tr class="section"><th colspan="2">' + FrameStates[index-1][i].id + '</th></tr>';
 		table.innerHTML += '<tr><td class="detail">Type</td><td>' + FrameStates[index-1][i].type + '</td></tr>';
-		table.innerHTML += '<tr><td class="detail last">Status</td><td class="last">' + FrameStates[index-1][i].status + '</td></tr>';
+		table.innerHTML += '<tr><td class="detail">Status</td><td>' + FrameStates[index-1][i].status + '</td></tr>';
+		table.innerHTML += '<tr><td class="detail">Caller</td><td>' + FrameStates[index-1][i].caller + '</td></tr>';
+		table.innerHTML += '<tr><td class="detail">Enter/Exit</td><td>' + FrameStates[index-1][i].enterExit + '</td></tr>';
+		table.innerHTML += '<tr><td class="detail">Function name</td><td>' + FrameStates[index-1][i].fnName + '</td></tr>';
+		table.innerHTML += '<tr><td class="detail last">Arguments</td><td>' + FrameStates[index-1][i].args + '</td></tr>';
 	}
 
 	obj.parentNode.className = "active";
@@ -67,12 +72,16 @@ function Timer(cmd) {
 		case 'start':
 			if (!interval) {
 				interval = window.setInterval(callback, delay);
+				document.getElementById('play').className = 'btn active';
+				document.getElementById('stop').className = 'btn';
 			}
 			break;
 		case 'stop':
 			if (interval) {
 				window.clearInterval(interval);
 				interval = null;
+				document.getElementById('play').className = 'btn';
+				document.getElementById('stop').className = 'btn active';
 			}
 			break;
 	}
@@ -90,10 +99,10 @@ function TimerDelay(obj) {
 		obj.value = delay;
 }
 
-function LoadState(index, id, type, status) {
+function LoadState(index, id, type, status, caller, enterExit, fnName, args) {
 	if (typeof FrameStates[index] == 'undefined')
 		FrameStates[index] = new Array();
-	FrameStates[index].push({index:index, id:id, type:type, status:status});
+	FrameStates[index].push({index:index, id:id, type:type, status:status, caller:caller, enterExit:enterExit, fnName:fnName, args:args});
 }
 
 function LoadStateView(index, filename) {
