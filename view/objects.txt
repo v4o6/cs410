@@ -1,57 +1,47 @@
-$VAR1 = 'Mutex602a40';
+$VAR1 = 'Threadb3f16700';
 $VAR2 = {
-          'Type' => 'Mutex',
-          'Method' => 'request_mutex',
-          'Status' => 'Unlocked',
-          'Locked by' => ''
+          'Links' => {
+                       'Cond602b20' => 'returned',
+                       'Mutex602ae0' => 'unlocked'
+                     },
+          'Type' => 'Thread',
+          'Status' => 'Dead',
+          'Children' => '',
+          'Label' => 'handle_requests_loop'
         };
-$VAR3 = 'Cond602a80';
+$VAR3 = 'Threadb3d14700';
 $VAR4 = {
-          'Type' => 'Condition Variable',
-          'Blocked Threads' => [
-                                 'Thread7b269700',
-                                 'Thread7b067700'
-                               ],
-          'Method' => 'got_request',
-          'Status' => 'Unlocked'
+          'Links' => {
+                       'Mutex602ae0' => 'unlocked'
+                     },
+          'Type' => 'Thread',
+          'Status' => 'Dead',
+          'Children' => '',
+          'Label' => 'handle_requests_loop'
         };
-$VAR5 = 'Thread7ae662e0';
+$VAR5 = 'Threadb3b132e0';
 $VAR6 = {
           'Links' => {
-                       'Mutex602a40' => 'unlocked',
-                       'Cond602a80' => 'broadcastdone',
-                       'Thread7b269700' => 'child',
-                       'Thread7b067700' => 'child'
+                       'Threadb3f16700' => 'joined',
+                       'Threadb3d14700' => 'joined',
+                       'Cond602b20' => 'endbroadcast',
+                       'Mutex602ae0' => 'unlocked'
                      },
-          'Joins Exit' => 'Thread7b269700,',
           'Type' => 'Thread',
-          'Method' => '{root}',
           'Status' => 'Alive',
-          'Joins' => 'Thread7b269700,'
+          'Children' => 'Mutex602ae0,Cond602b20,Threadb3d14700,Threadb3f16700,',
+          'Label' => '{root}'
         };
-$VAR7 = 'Thread7b269700';
+$VAR7 = 'Cond602b20';
 $VAR8 = {
-          'Links' => {
-                       'Mutex602a40' => 'unlocked',
-                       'Cond602a80' => 'condunlock'
-                     },
-          'Joins Exit' => '',
-          'Type' => 'Thread',
-          'Method' => 'handle_requests_loop',
-          'Status' => 'Dead',
-          'Locked by' => 'Thread7b269700',
-          'Joins' => ''
+          'Type' => 'Condition Variable',
+          'Status' => 'Unblocked',
+          'Label' => 'got_request'
         };
-$VAR9 = 'Thread7b067700';
+$VAR9 = 'Mutex602ae0';
 $VAR10 = {
-           'Links' => {
-                        'Mutex602a40' => 'unlocked',
-                        'Cond602a80' => 'condunlock'
-                      },
-           'Joins Exit' => '',
-           'Type' => 'Thread',
-           'Method' => 'handle_requests_loop',
-           'Status' => 'Dead',
+           'Type' => 'Mutex',
+           'Status' => 'Unlocked',
            'Locked by' => '',
-           'Joins' => ''
+           'Label' => 'request_mutex'
          };
