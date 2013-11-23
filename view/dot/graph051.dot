@@ -1,7 +1,10 @@
 digraph G {
 graph[center=true, ratio=2];
-Thread2554929600 -> Thread2557032192 [arrowhead=normal];
-Thread2554929600 -> Thread2559137536 [arrowhead=normal];
-Thread2557032192 [shape=box,color=black];
-Thread2559137536 [shape=box,color=black];
+Thread16bda700 [shape=box,color=black];
+Mutex602a40 [shape=trapezium,color=red];
+Cond602a80 [shape=parallelogram,color=black];
+Thread169d8700 [shape=box,color=black];
+Thread167d72e0 -> Thread16bda700 [arrowhead=normal];
+Thread167d72e0 -> Mutex602a40 [arrowhead=normal,color=lightgray];
+Thread167d72e0 -> Thread169d8700 [arrowhead=normal];
 }

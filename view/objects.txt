@@ -1,24 +1,40 @@
-$VAR1 = 'Thread2554929600';
+$VAR1 = 'Thread16bda700';
 $VAR2 = {
           'Links' => {
-                       'Thread2557032192' => 'child',
-                       'Thread2559137536' => 'child'
+                       'Mutex602a40' => 'lock'
                      },
           'Type' => 'Thread',
           'Status' => 'Unlocked',
           'Joins' => ''
         };
-$VAR3 = 'Thread2557032192';
+$VAR3 = 'Mutex602a40';
 $VAR4 = {
-          'Links' => {},
+          'Type' => 'Mutex',
+          'Status' => 'Locked'
+        };
+$VAR5 = 'Cond602a80';
+$VAR6 = {
+          'Type' => 'Condition Variable',
+          'Blocked Threads' => undef,
+          'Status' => 'Unlocked'
+        };
+$VAR7 = 'Thread169d8700';
+$VAR8 = {
+          'Links' => {
+                       'Mutex602a40' => 'lock'
+                     },
           'Type' => 'Thread',
           'Status' => 'Alive',
           'Joins' => ''
         };
-$VAR5 = 'Thread2559137536';
-$VAR6 = {
-          'Links' => {},
-          'Type' => 'Thread',
-          'Status' => 'Unlocked',
-          'Joins' => ''
-        };
+$VAR9 = 'Thread167d72e0';
+$VAR10 = {
+           'Links' => {
+                        'Thread16bda700' => 'child',
+                        'Mutex602a40' => 'lock',
+                        'Thread169d8700' => 'child'
+                      },
+           'Type' => 'Thread',
+           'Status' => 'Unlocked',
+           'Joins' => ''
+         };

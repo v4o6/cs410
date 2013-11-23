@@ -1,6 +1,5 @@
 digraph G {
 graph[center=true, ratio=2];
-Thread2554929600 [shape=box,color=black];
-Thread2554929600 -> Thread2557032192 [arrowhead=normal];
-Thread2557032192 [shape=box,color=black];
+Mutex602a40 [shape=trapezium,color=black];
+Cond602a80 [shape=parallelogram,color=black];
 }
