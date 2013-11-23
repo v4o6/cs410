@@ -2,15 +2,15 @@ digraph G {
 graph[center=true, ratio=1];
 Mutex602a40 [shape=trapezium,color=black,label="Mutex602a40\nrequest_mutex"];
 Cond602a80 [shape=parallelogram,color=red,label="Cond602a80\ngot_request"];
-Thread7ae662e0 [color=black,label="Thread7ae662e0\nhandle_requests_loop"];
+Thread7ae662e0 [color=black,label="Thread7ae662e0\n{root}"];
 Thread7ae662e0 -> Mutex602a40 [arrowhead=normal,color=green,dir=back,penwidth=2];
 Thread7ae662e0 -> Cond602a80 [style=dotted,color=lightgray,penwidth=2];
 Thread7ae662e0 -> Thread7b269700 [arrowhead=normal,penwidth=2];
 Thread7ae662e0 -> Thread7b067700 [arrowhead=normal,penwidth=2];
 Thread7b269700 [color=black,label="Thread7b269700\nhandle_requests_loop"];
 Thread7b269700 -> Mutex602a40 [arrowhead=normal,color=lightgray,penwidth=2];
-Thread7b269700 -> Cond602a80 [arrowhead=inv,color=red,penwidth=2];
+Thread7b269700 -> Cond602a80 [arrowhead=normal,color=red,penwidth=2];
 Thread7b067700 [color=black,label="Thread7b067700\nhandle_requests_loop"];
 Thread7b067700 -> Mutex602a40 [arrowhead=normal,color=lightgray,penwidth=2];
-Thread7b067700 -> Cond602a80 [arrowhead=inv,color=red,penwidth=2];
+Thread7b067700 -> Cond602a80 [arrowhead=normal,color=red,penwidth=2];
 }

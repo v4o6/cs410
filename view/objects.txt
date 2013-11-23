@@ -8,7 +8,10 @@ $VAR2 = {
 $VAR3 = 'Cond602a80';
 $VAR4 = {
           'Type' => 'Condition Variable',
-          'Blocked Threads' => [],
+          'Blocked Threads' => [
+                                 'Thread7b269700',
+                                 'Thread7b067700'
+                               ],
           'Method' => 'got_request',
           'Status' => 'Unlocked'
         };
@@ -16,13 +19,13 @@ $VAR5 = 'Thread7ae662e0';
 $VAR6 = {
           'Links' => {
                        'Mutex602a40' => 'unlocked',
-                       'Cond602a80' => 'endsignal',
+                       'Cond602a80' => 'broadcastdone',
                        'Thread7b269700' => 'child',
                        'Thread7b067700' => 'child'
                      },
           'Joins Exit' => 'Thread7b269700,',
           'Type' => 'Thread',
-          'Method' => 'handle_requests_loop',
+          'Method' => '{root}',
           'Status' => 'Alive',
           'Joins' => 'Thread7b269700,'
         };
@@ -43,7 +46,7 @@ $VAR9 = 'Thread7b067700';
 $VAR10 = {
            'Links' => {
                         'Mutex602a40' => 'unlocked',
-                        'Cond602a80' => 'condblock'
+                        'Cond602a80' => 'condunlock'
                       },
            'Joins Exit' => '',
            'Type' => 'Thread',

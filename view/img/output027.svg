@@ -23,18 +23,18 @@
 </g>
 <!-- Thread7ae662e0 -->
 <g id="node3" class="node"><title>Thread7ae662e0</title>
-<ellipse fill="none" stroke="black" cx="263.923" cy="-494" rx="116.88" ry="29.6985"/>
+<ellipse fill="none" stroke="black" cx="263.923" cy="-494" rx="94.9596" ry="29.6985"/>
 <text text-anchor="middle" x="263.923" y="-498.4" font-family="Times Roman,serif" font-size="14.00">Thread7ae662e0</text>
-<text text-anchor="middle" x="263.923" y="-481.4" font-family="Times Roman,serif" font-size="14.00">handle_requests_loop</text>
+<text text-anchor="middle" x="263.923" y="-481.4" font-family="Times Roman,serif" font-size="14.00">{root}</text>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Mutex602a40 -->
 <g id="edge2" class="edge"><title>Thread7ae662e0&#45;&gt;Mutex602a40</title>
-<path fill="none" stroke="lightgray" stroke-width="2" d="M193.462,-470.32C133.137,-445.861 50.1502,-401.253 11.923,-331 -24.9193,-263.292 33.6229,-183.65 82.6399,-133.493"/>
+<path fill="none" stroke="lightgray" stroke-width="2" d="M198.708,-472.419C138.041,-448.455 51.2709,-403.313 11.923,-331 -24.9193,-263.292 33.6229,-183.65 82.6399,-133.493"/>
 <polygon fill="lightgray" stroke="lightgray" points="85.2147,-135.867 89.7903,-126.311 80.2543,-130.928 85.2147,-135.867"/>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Cond602a80 -->
 <g id="edge4" class="edge"><title>Thread7ae662e0&#45;&gt;Cond602a80</title>
-<path fill="none" stroke="green" stroke-width="2" stroke-dasharray="1,5" d="M334.384,-470.32C394.709,-445.861 477.696,-401.253 515.923,-331 549.668,-268.985 519.693,-187.393 492.747,-135.306"/>
+<path fill="none" stroke="green" stroke-width="2" stroke-dasharray="1,5" d="M329.138,-472.419C389.805,-448.455 476.575,-403.313 515.923,-331 549.668,-268.985 519.693,-187.393 492.747,-135.306"/>
 <polygon fill="green" stroke="green" points="495.721,-133.444 487.94,-126.253 489.538,-136.727 495.721,-133.444"/>
 </g>
 <!-- Thread7b269700 -->
@@ -67,7 +67,7 @@
 <!-- Thread7b269700&#45;&gt;Cond602a80 -->
 <g id="edge12" class="edge"><title>Thread7b269700&#45;&gt;Cond602a80</title>
 <path fill="none" stroke="red" stroke-width="2" d="M399.783,-271.282C411.324,-236.499 430.641,-178.279 444.679,-135.971"/>
-<polygon fill="red" stroke="red" points="451.179,-127.494 444.708,-135.883 444.535,-125.29 451.179,-127.494"/>
+<polygon fill="red" stroke="red" points="448.03,-136.986 447.857,-126.392 441.386,-134.781 448.03,-136.986"/>
 </g>
 <!-- Thread7b067700&#45;&gt;Mutex602a40 -->
 <g id="edge14" class="edge"><title>Thread7b067700&#45;&gt;Mutex602a40</title>

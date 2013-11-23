@@ -23,18 +23,18 @@
 </g>
 <!-- Thread7ae662e0 -->
 <g id="node3" class="node"><title>Thread7ae662e0</title>
-<ellipse fill="none" stroke="black" cx="263.352" cy="-437" rx="116.88" ry="29.6985"/>
+<ellipse fill="none" stroke="black" cx="263.352" cy="-437" rx="94.9596" ry="29.6985"/>
 <text text-anchor="middle" x="263.352" y="-441.4" font-family="Times Roman,serif" font-size="14.00">Thread7ae662e0</text>
-<text text-anchor="middle" x="263.352" y="-424.4" font-family="Times Roman,serif" font-size="14.00">handle_requests_loop</text>
+<text text-anchor="middle" x="263.352" y="-424.4" font-family="Times Roman,serif" font-size="14.00">{root}</text>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Mutex602a40 -->
 <g id="edge2" class="edge"><title>Thread7ae662e0&#45;&gt;Mutex602a40</title>
-<path fill="none" stroke="lightgray" stroke-width="2" d="M182.434,-415.62C123.56,-395.359 47.9949,-358.491 11.3522,-296 -23.1069,-237.233 29.7029,-169.051 77.1273,-124.135"/>
-<polygon fill="lightgray" stroke="lightgray" points="79.7268,-126.498 84.6782,-117.131 74.9664,-121.365 79.7268,-126.498"/>
+<path fill="none" stroke="red" stroke-width="2" d="M189.975,-418.157C130.17,-398.501 49.5798,-361.194 11.3522,-296 -23.1069,-237.233 29.7029,-169.051 77.1273,-124.135"/>
+<polygon fill="red" stroke="red" points="79.7268,-126.498 84.6782,-117.131 74.9664,-121.365 79.7268,-126.498"/>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Cond602a80 -->
 <g id="edge4" class="edge"><title>Thread7ae662e0&#45;&gt;Cond602a80</title>
-<path fill="none" stroke="lightgray" stroke-width="2" stroke-dasharray="1,5" d="M344.27,-415.62C403.144,-395.359 478.71,-358.491 515.352,-296 549.811,-237.233 497.002,-169.051 449.577,-124.135"/>
+<path fill="none" stroke="lightgray" stroke-width="2" stroke-dasharray="1,5" d="M336.729,-418.157C396.534,-398.501 477.125,-361.194 515.352,-296 549.811,-237.233 497.002,-169.051 449.577,-124.135"/>
 <polygon fill="lightgray" stroke="lightgray" points="451.738,-121.365 442.026,-117.131 446.978,-126.498 451.738,-121.365"/>
 </g>
 <!-- Thread7b269700 -->
@@ -67,7 +67,7 @@
 <!-- Thread7b269700&#45;&gt;Cond602a80 -->
 <g id="edge12" class="edge"><title>Thread7b269700&#45;&gt;Cond602a80</title>
 <path fill="none" stroke="red" stroke-width="2" d="M174.536,-237.817C214.269,-207.702 277.976,-159.416 325.713,-123.234"/>
-<polygon fill="red" stroke="red" points="335.945,-119.871 325.861,-123.122 331.716,-114.293 335.945,-119.871"/>
+<polygon fill="red" stroke="red" points="327.975,-125.912 333.83,-117.082 323.747,-120.333 327.975,-125.912"/>
 </g>
 <!-- Thread7b067700&#45;&gt;Mutex602a40 -->
 <g id="edge14" class="edge"><title>Thread7b067700&#45;&gt;Mutex602a40</title>
@@ -77,7 +77,7 @@
 <!-- Thread7b067700&#45;&gt;Cond602a80 -->
 <g id="edge16" class="edge"><title>Thread7b067700&#45;&gt;Cond602a80</title>
 <path fill="none" stroke="red" stroke-width="2" d="M389.352,-236.156C389.352,-207.031 389.352,-162.114 389.352,-127.092"/>
-<polygon fill="red" stroke="red" points="392.852,-117.034 389.352,-127.034 385.852,-117.034 392.852,-117.034"/>
+<polygon fill="red" stroke="red" points="392.852,-127.034 389.352,-117.034 385.852,-127.034 392.852,-127.034"/>
 </g>
 </g>
 </svg>

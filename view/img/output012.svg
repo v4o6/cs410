@@ -23,14 +23,14 @@
 </g>
 <!-- Thread7ae662e0 -->
 <g id="node3" class="node"><title>Thread7ae662e0</title>
-<ellipse fill="none" stroke="black" cx="491" cy="-818" rx="116.88" ry="29.6985"/>
+<ellipse fill="none" stroke="black" cx="491" cy="-818" rx="94.9596" ry="29.6985"/>
 <text text-anchor="middle" x="491" y="-822.4" font-family="Times Roman,serif" font-size="14.00">Thread7ae662e0</text>
-<text text-anchor="middle" x="491" y="-805.4" font-family="Times Roman,serif" font-size="14.00">handle_requests_loop</text>
+<text text-anchor="middle" x="491" y="-805.4" font-family="Times Roman,serif" font-size="14.00">{root}</text>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Mutex602a40 -->
 <g id="edge2" class="edge"><title>Thread7ae662e0&#45;&gt;Mutex602a40</title>
-<path fill="none" stroke="lightgray" stroke-width="2" d="M472.652,-788.791C413.615,-694.811 228.059,-399.426 152.991,-279.926"/>
-<polygon fill="lightgray" stroke="lightgray" points="155.85,-277.897 147.567,-271.291 149.922,-281.621 155.85,-277.897"/>
+<path fill="none" stroke="red" stroke-width="2" d="M472.652,-788.791C413.615,-694.811 228.059,-399.426 152.991,-279.926"/>
+<polygon fill="red" stroke="red" points="155.85,-277.897 147.567,-271.291 149.922,-281.621 155.85,-277.897"/>
 </g>
 <!-- Thread7ae662e0&#45;&gt;Cond602a80 -->
 <g id="edge4" class="edge"><title>Thread7ae662e0&#45;&gt;Cond602a80</title>

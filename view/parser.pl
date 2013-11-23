@@ -421,7 +421,7 @@ while (<LOGFILE>) {
 						    'Status' => 'Alive',
 						    'Joins' => '',
 						    'Joins Exit' => '',
-						    'Method' => $arguments[2],
+						    'Method' => '{root}',
 						    'Links' => %links};
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
