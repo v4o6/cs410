@@ -196,7 +196,7 @@ sub WriteDOTFile {
 	my $dotFilename = "graph".$num.".dot";
 	open (GRAPHFILE, ">", "dot/".$dotFilename);
 	print GRAPHFILE "digraph G {\n";
-	print GRAPHFILE "graph[center=true, ratio=2];\n";
+	print GRAPHFILE "graph[center=true, ratio=1];\n";
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
 			if ($objects{$key}{'Status'} eq "Alive") {
