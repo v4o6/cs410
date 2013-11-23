@@ -239,10 +239,16 @@ sub WriteDOTFile {
 					print GRAPHFILE " [arrowhead=normal,color=lightgray,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condblock") {
-					print GRAPHFILE " [arrowhead=inv,color=red,penwidth=2];\n";
+					print GRAPHFILE " [arrowhead=normal,color=red,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condunlock") {
-					print GRAPHFILE " [arrowhead=inv,color=green,dir=back,penwidth=2];\n";
+					print GRAPHFILE " [arrowhead=normal,color=lightgray,dir=back,penwidth=2];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "broadcast") {
+					print GRAPHFILE " [style=dashed,color=green,penwidth=2];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "broadcastdone") {
+					print GRAPHFILE " [style=dashed,color=lightgray,penwdith=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
 					print GRAPHFILE " [style=dotted,color=green,penwidth=2];\n";
@@ -445,7 +451,7 @@ while (<LOGFILE>) {
 	}
 	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
-			if ($objects{$arguments[0]}{'Status'} eq "Locked" && $objects{$arguments[0]}{'Locked by'} ne $callingThread) {
+			if ($objects{$arguments[0]}{'Locked by'} ne $callingThread) {
 				$objects{$callingThread}{'Links'}{$arguments[0]} = 'mutex wait';
 			}
 		}
@@ -505,6 +511,7 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'unlocked';
 			$objects{$callingThread}{'Locked by'} = '';
 			$objects{$arguments[1]}{'Status'} = 'Unlocked';
+			push @{$objects{$arguments[0]}{'Blocked Threads'}}, $callingThread;
 		}
 		else {
 			next;
@@ -540,6 +547,15 @@ while (<LOGFILE>) {
 	}
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'broadcast';
+		}
+		else {
+			next;
+		}
+	}
+	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'broadcastdone';
 			foreach my $thread (@{$objects{$arguments[0]}{'Blocked Threads'}}) {
 				$objects{$thread}{'Links'}{$arguments[0]} = 'condunlock';
 			}
