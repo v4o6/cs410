@@ -374,15 +374,24 @@ while (<LOGFILE>) {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
 		}
+		else {
+			next;
+		}
 	}
 	elsif(($functionName eq "pthread_tryjoin" || $functionName eq "pthread_timedjoin") && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$callingThread}{'Joins'} = $objects{$callingThread}{'Joins'} . "$arguments[0],";
-		}	
+		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_join" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$callingThread}{'Joins Exit'} = $objects{$callingThread}{'Joins Exit'} . "$arguments[0],";
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_create" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
@@ -390,6 +399,7 @@ while (<LOGFILE>) {
 		$objects{$arguments[0]} = {
 			'Type' => 'Thread',
 			'Status' => 'Alive',
+			'Method' => $arguments[2],
 			'Joins Exit' => '',
 			'Joins' => '',
 			'Links' => %links};
@@ -401,6 +411,7 @@ while (<LOGFILE>) {
 						    'Status' => 'Alive',
 						    'Joins' => '',
 						    'Joins Exit' => '',
+						    'Method' => $arguments[2],
 						    'Links' => %links};
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'child';
 		}
@@ -410,10 +421,16 @@ while (<LOGFILE>) {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_exit" && $enterExit eq "ENTER") {
 		if (exists $objects{$callingThread}) {
 			$objects{$callingThread}{'Status'} = 'Dead';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_mutex_init" && $enterExit eq "ENTER") {
@@ -427,12 +444,18 @@ while (<LOGFILE>) {
 				$objects{$callingThread}{'Links'}{$arguments[0]} = 'mutex wait';
 			}
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
 			$objects{$arguments[0]}{'Locked by'} = $callingThread;
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_mutex_trylock" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
@@ -441,6 +464,9 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
 			$objects{$arguments[0]}{'Locked by'} = $callingThread;
                 }
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_mutex_unlock" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
@@ -448,10 +474,16 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'unlocked';
 			$objects{$arguments[0]}{'Locked by'} = '';
 		}
+		else {
+			next;
+		}
 	}	
 	elsif($functionName eq "pthread_mutex_destroy" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_cond_init" && $enterExit eq "ENTER") {
@@ -468,6 +500,9 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Locked by'} = '';
 			$objects{$arguments[1]}{'Status'} = 'Unlocked';
 		}
+		else {
+			next;
+		}
 	}
 	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $stackOrReturn eq "0" && $enterExit eq "EXIT") {
 		if (exists $objects{$arguments[0]}) {
@@ -476,16 +511,25 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Links'}{$arguments[1]} = 'lock';
 			$objects{$callingThread}{'Locked by'} = $callingThread;
 			$objects{$arguments[1]}{'Status'} = 'Locked';
-		}	
+		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_cond_signal" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'signal';
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_cond_signal" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endsignal';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_cond_broadcast" && $enterExit eq "ENTER") {
@@ -494,10 +538,16 @@ while (<LOGFILE>) {
 				$objects{$thread}{'Links'}{$arguments[0]} = 'condunlock';
 			}
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_cond_destroy" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_barrier_init" && $enterExit eq "ENTER") {
@@ -524,10 +574,16 @@ while (<LOGFILE>) {
 				$objects{$arguments[0]}{'Threads Waiting'} = @empty;	 
 			}
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_barrier_destroy" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_spin_init" && $enterExit eq "ENTER") {
@@ -538,17 +594,26 @@ while (<LOGFILE>) {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
 		}
+		else {
+			next;
+		}
 	}
 	elsif(($functionName eq "pthread_spin_lock" || $functionName eq "pthread_spin_trylock") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'spinlock';
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_spin_unlock" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'spinunlocked';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_rwlock_init" && $enterExit eq "ENTER") {
@@ -561,23 +626,35 @@ while (<LOGFILE>) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'rdlock';
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_rwlock_wrlock" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'wrlock';
 		}
+		else {
+			next;
+		}
 	}
 	elsif(($functionName eq "pthread_rwlock_trywrlock" || $functionName eq "pthread_rwlock_timedrdlock") && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'wrlock';
-		}	
+		}
+		else {
+			next;
+		}
 	}
 	elsif(($functionName eq "pthread_rwlock_tryrdlock" || $functionName eq "pthread_rwlock_timedwrlock") && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'rdlock';
+		}
+		else {
+			next;
 		}
 	}
 	elsif($functionName eq "pthread_rwlock_unlock" && $enterExit eq "ENTER") {
@@ -585,11 +662,20 @@ while (<LOGFILE>) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'rwunlocked';
 		}
+		else {
+			next;
+		}
 	}
 	elsif($functionName eq "pthread_rwlock_destroy" && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
 		}
+		else {
+			next;
+		}
+	}
+	else {
+		next;
 	}
 
 	my $filename = &WriteDOTFile($count);
