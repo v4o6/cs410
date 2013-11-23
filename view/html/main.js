@@ -32,6 +32,7 @@ function ChangeView(obj) {
 	}
 
 	obj.parentNode.className = "active";
+	document.getElementById('title').innerHTML = FrameStates[index-1][0].method;
 }
 
 function StepFrame(dir) {
@@ -64,6 +65,7 @@ function StepFrame(dir) {
 	}
 
 	//alert(active.offsetLeft + ' ' + active.offsetTop);
+	document.getElementById('frame-select').scrollTop += 20;
 }
 
 function Timer(cmd) {
@@ -102,7 +104,7 @@ function TimerDelay(obj) {
 		obj.value = delay;
 }
 
-function LoadState(index, id, type, status, method, caller, enterExit, fnName, args) {
+function LoadState(index, id, type, status, fnName, caller, enterExit, method, args) {
 	if (typeof FrameStates[index] == 'undefined')
 		FrameStates[index] = new Array();
 	FrameStates[index].push({index:index, id:id, type:type, status:status, method:method, caller:caller, enterExit:enterExit, fnName:fnName, args:args});

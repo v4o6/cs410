@@ -50,10 +50,11 @@ sub AppendProgramName {
 }
 
 sub AppendView {
-	return "<div class=\"row\">			
+	return "<div class=\"row\">		
 		<!-- Image Section -->
 		<div id=\"view\" class=\"col-md-8\">
 			<img src=\"\" alt=\"\">
+			<h4 id='title'></h4>
 		</div>";
 }
 
@@ -199,69 +200,70 @@ sub WriteDOTFile {
 	print GRAPHFILE "graph[center=true, ratio=1];\n";
 	foreach my $key (keys %objects) {
 		if ($objects{$key}{'Type'} eq "Thread") {
+			my $methodName = $key .'\n' . $objects{$key}{'Method'};
 			if ($objects{$key}{'Status'} eq "Alive") {
-				print GRAPHFILE "$key [color=black];\n";
+				print GRAPHFILE "$key [color=black,label=\"$methodName\"];\n";
 			}
 			if ($objects{$key}{'Status'} eq "Dead") {
-				print GRAPHFILE "$key [color=lightgray];\n";
+				print GRAPHFILE "$key [color=lightgray,label=\"$methodName\"];\n";
 			}
 			# break the joins into array after removing trailing commas
 			#$objects{$key}{'Joins'} = substr $objects{$key}{'Joins'}, 0, -1; 
 			my @joinedThreads = split ',', $objects{$key}{'Joins'};
 			foreach my $join (@joinedThreads) {
-				print GRAPHFILE "$key -> $join [arrowhead=odot];\n";
+				print GRAPHFILE "$key -> $join [arrowhead=odot,penwidth=2];\n";
 			}
 			my @joinedExitThreads = split ',', $objects{$key}{'Joins Exit'};
 			foreach my $joinedExit (@joinedExitThreads) {
-				print GRAPHFILE "$key -> $joinedExit [arrowtail=odot,color=green,dir=back];\n";
+				print GRAPHFILE "$key -> $joinedExit [arrowtail=odot,color=green,dir=back,penwidth=2];\n";
 			}
 			# deals with printing out all edges for threads
 			foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
 				print GRAPHFILE "$key -> $linkKey";
 				if ($objects{$key}{'Links'}{$linkKey} eq "child") {
-					print GRAPHFILE " [arrowhead=normal];\n";
+					print GRAPHFILE " [arrowhead=normal,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
-					print GRAPHFILE " [arrowhead=diamond,color=black];\n";
+					print GRAPHFILE " [arrowhead=diamond,color=black,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinunlocked") {
-					print GRAPHFILE " [arrowhead=diamond,color=lightgray];\n";
+					print GRAPHFILE " [arrowhead=diamond,color=lightgray,penwidth=2];\n";
 				}	
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
-					print GRAPHFILE " [arrowhead=normal,color=green,dir=back];\n";
+					print GRAPHFILE " [arrowhead=normal,color=green,dir=back,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "mutex wait") {
-					print GRAPHFILE " [arrowhead=normal,color=red];\n";
+					print GRAPHFILE " [arrowhead=normal,color=red,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "unlocked") {
-					print GRAPHFILE " [arrowhead=normal,color=lightgray];\n";
+					print GRAPHFILE " [arrowhead=normal,color=lightgray,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condblock") {
-					print GRAPHFILE " [arrowhead=inv,color=red];\n";
+					print GRAPHFILE " [arrowhead=inv,color=red,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condunlock") {
-					print GRAPHFILE " [arrowhead=inv,color=green,dir=back];\n";
+					print GRAPHFILE " [arrowhead=inv,color=green,dir=back,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
-					print GRAPHFILE " [style=dotted,color=green];\n";
+					print GRAPHFILE " [style=dotted,color=green,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endsignal") {
-					print GRAPHFILE " [style=dotted,color=lightgray];\n";
+					print GRAPHFILE " [style=dotted,color=lightgray,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "barrier") {
-					print GRAPHFILE " [arrowhead=box,color=black];\n";
+					print GRAPHFILE " [arrowhead=box,color=black,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "maxed barrier") {
-					print GRAPHFILE " [arrowhead=box,color=lightgray];\n";
+					print GRAPHFILE " [arrowhead=box,color=lightgray,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
-					print GRAPHFILE " [arrowhead=dot,color=blue];\n";
+					print GRAPHFILE " [arrowhead=dot,color=blue,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
-					print GRAPHFILE " [arrowhead=dot,color=red];\n";
+					print GRAPHFILE " [arrowhead=dot,color=red,penwidth=2];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "rwunlocked") {
-					print GRAPHFILE " [arrowhead=dot,color=lightgray];\n";
+					print GRAPHFILE " [arrowhead=dot,color=lightgray,penwidth=2];\n";
 				}
 			}
 		}
@@ -277,14 +279,15 @@ sub WriteDOTFile {
 			}
 		}
 		elsif ($objects{$key}{'Type'} eq "Mutex") {
+			my $methodName = $key . '\n' . $objects{$key}{'Method'};
 			if ($objects{$key}{'Status'} eq "Unlocked") {
-				print GRAPHFILE "$key [shape=trapezium,color=black];\n";
+				print GRAPHFILE "$key [shape=trapezium,color=black,label=\"$methodName\"];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Locked") {
-				print GRAPHFILE "$key [shape=trapezium,color=black];\n";
+				print GRAPHFILE "$key [shape=trapezium,color=black,label=\"$methodName\"];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Dead") {
-				print GRAPHFILE "$key [shape=trapezium,color=lightgray]\n";
+				print GRAPHFILE "$key [shape=trapezium,color=lightgray,label=\"$methodName\"]\n";
 			}
 		}
 		elsif ($objects{$key}{'Type'} eq "Barrier") {
@@ -310,14 +313,15 @@ sub WriteDOTFile {
 			}
 		}
 		elsif ($objects{$key}{'Type'} eq "Condition Variable") {
+			my $methodName = $key . '\n' . $objects{$key}{'Method'};
 			if ($objects{$key}{'Status'} eq "Unlocked") {
-				print GRAPHFILE "$key [shape=parallelogram,color=black];\n";
+				print GRAPHFILE "$key [shape=parallelogram,color=black,label=\"$methodName\"];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Locked") {
-				print GRAPHFILE "$key [shape=parallelogram,color=red];\n";
+				print GRAPHFILE "$key [shape=parallelogram,color=red,label=\"$methodName\"];\n";
 			}
 			elsif($objects{$key}{'Status'} eq "Dead") {
-				print GRAPHFILE "$key [shape=parallelogram,color=lightgray]\n";
+				print GRAPHFILE "$key [shape=parallelogram,color=lightgray=\"$methodName\"]\n";
 			}
 		}
 	}
@@ -436,6 +440,7 @@ while (<LOGFILE>) {
 	elsif($functionName eq "pthread_mutex_init" && $enterExit eq "ENTER") {
 		$objects{$arguments[0]} = {'Type' => 'Mutex',
 					   'Status' => 'Unlocked',
+					   'Method' => $arguments[1],
 					   'Locked by' => ''};
 	}
 	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "ENTER") {
@@ -490,6 +495,7 @@ while (<LOGFILE>) {
 		my @threads;
 		$objects{$arguments[0]} = {'Type' => 'Condition Variable',
 					   'Status' => 'Unlocked',
+					   'Method' => $arguments[1],
 					   'Blocked Threads' => @threads};
 	}
 	elsif(($functionName eq "pthread_cond_wait" || $functionName eq "pthread_cond_timedwait") && $enterExit eq "ENTER") {
