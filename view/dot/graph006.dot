@@ -2,7 +2,8 @@ digraph G {
 graph[center=true, ratio=2];
 Mutex602a40 [shape=trapezium,color=black];
 Cond602a80 [shape=parallelogram,color=black];
-Thread169d8700 [shape=box,color=black];
-Thread167d72e0 [shape=box,color=black];
+Thread169d8700 [color=black];
+Thread167d72e0 [color=black];
+Thread167d72e0 -> Mutex602a40 [arrowhead=normal,color=lightgray];
 Thread167d72e0 -> Thread169d8700 [arrowhead=normal];
 }

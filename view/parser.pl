@@ -186,7 +186,7 @@ sub WriteHTMLSelector {
 sub WriteHTMLDetails {
 	foreach my $key (keys %objects) {
 		$html_js .= "LoadStateView($_[1],\"$_[0]\");\n";
-		$html_js .= "LoadState($_[1] -1,\"$key\",\"$objects{$key}{'Type'}\",\"$objects{$key}{'Status'}\",\"$callingThread\",\"$enterExit\",\"$functionName\",\"$argumentList\");";
+		$html_js .= "LoadState($_[1] -1,\"$key\",\"$objects{$key}{'Type'}\",\"$objects{$key}{'Status'}\",\"$objects{$key}{'Method'}\",\"$callingThread\",\"$enterExit\",\"$functionName\",\"$argumentList\");";
 	}
 }
 
