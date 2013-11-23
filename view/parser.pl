@@ -386,9 +386,14 @@ while (<LOGFILE>) {
 		}
 
 	}
-	elsif(($functionName eq "pthread_cancel") || ($functionName eq "pthread_exit") && $enterExit eq "ENTER") {
+	elsif($functionName eq "pthread_cancel" && $enterExit eq "EXIT" && $stackOrReturn eq "0") {
 		if (exists $objects{$arguments[0]}) {
 			$objects{$arguments[0]}{'Status'} = 'Dead';
+		}
+	}
+	elsif($functionName eq "pthread_exit" && $enterExit eq "ENTER") {
+		if (exists $objects{$callingThread}) {
+			$objects{$callingThread}{'Status'} = 'Dead';
 		}
 	}
 	elsif($functionName eq "pthread_mutex_init" && $enterExit eq "ENTER") {

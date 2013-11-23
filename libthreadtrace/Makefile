@@ -1,17 +1,9 @@
 CC  = gcc
 
-#BINUTILS_TARGET  = '"x86_64-pc-linux-gnu"'
-#BINUTILS_TARGET  = '"x86_64-laptop-linux-gnu"'
-BINUTILS_TARGET  = '"x86_64-unknown-linux-gnu"'
-BINUTILS_SOURCE  = ../binutils-2.22
-LIBTRACE_CFLAGS  = -DTARGET=$(BINUTILS_TARGET) -fPIC -I$(BINUTILS_SOURCE)/bfd -I$(BINUTILS_SOURCE)/include -I$(BINUTILS_SOURCE)/binutils -I. -Wall -O4
-LIBTRACE_LDFLAGS = -lbfd -liberty -lz #-L$(BINUTILS_SOURCE)/bfd -L$(BINUTILS_SOURCE)/libiberty
-
-TARGET		= thread-pool-server
-TARGET_SRC	= handler_thread.c handler_threads_pool.c main.c requests_queue.c
+TARGET		= thread-pool-server # producer_consumer
+TARGET_SRC	= handler_thread.c handler_threads_pool.c main.c requests_queue.c #producer_consumer.c
 TARGET_OBJ      = $(TARGET_SRC:%.c=%.o)
-TARGET_FLAGS	= -rdynamic -Wall -Wno-unused-but-set-variable -lpthread
-
+TARGET_FLAGS	= -rdynamic -lpthread -Wall -Wno-unused-but-set-variable
 
 
 all: $(TARGET) libpthread_wrapper.so
@@ -19,14 +11,11 @@ all: $(TARGET) libpthread_wrapper.so
 $(TARGET): $(TARGET_SRC)
 	$(CC) $^ -o $@ $(TARGET_FLAGS)
 
-libpthread_wrapper.so: libpthread_wrapper.o trace.o
-	$(LD) -shared -o libpthread_wrapper.so libpthread_wrapper.o trace.o $(LIBTRACE_LDFLAGS) -ldl -lrt
+libpthread_wrapper.so: libpthread_wrapper.o
+	$(LD) $^ -o $@ -shared -ldl -lrt
 
-trace.o: trace.c libtrace.h Makefile
-	$(CC) -c $< -o $@ $(LIBTRACE_CFLAGS)
-
-libpthread_wrapper.o: libpthread_wrapper.c
-	$(CC) -Wall -fPIC -DPIC -c libpthread_wrapper.c
+libpthread_wrapper.o: libpthread_wrapper.c Makefile
+	$(CC) -c $< -fPIC -DPIC -Wall
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<

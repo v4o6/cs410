@@ -8,10 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "libtrace.h"
-
 #define MAX_BUF_LEN	(128)
-static char func_buf[MAX_BUF_LEN] = {0};
 static char arg_buf[MAX_BUF_LEN] = {0};
 #define MAX_LOG_LINES	(1024)
 static int log_count = 0;
@@ -19,7 +16,7 @@ static int log_count = 0;
 FILE *log_fp;
 void log_func_enter(pthread_t tid, char *func_name, char *args);
 void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
-
+const char *translate_address(const void *addr);
 
 int (*orig_pthread_create) (pthread_t *newthread, 
 				const pthread_attr_t *attr,
@@ -83,13 +80,13 @@ void *(*start_routine) (void *);
 void *arg;
 {
   pthread_t self = pthread_self();
-  libtrace_translate_addresses (start_routine, func_buf, MAX_BUF_LEN, NULL, 0);
+  const char *func_name = translate_address(start_routine);
 
-  sprintf(arg_buf, "(Thread%u,%p,%s,%p)", 0, attr, func_buf, arg);
+  sprintf(arg_buf, "(Thread%x,%p,%s,%p)", 0, attr, func_name, arg);
   log_func_enter(self, "pthread_create", arg_buf);
 
   int ret = orig_pthread_create(newthread, attr, start_routine, arg);
-  sprintf(arg_buf, "(Thread%u,%p,%s,%p)", (unsigned int)(*newthread), attr, func_buf, arg);
+  sprintf(arg_buf, "(Thread%x,%p,%s,%p)", (unsigned int)(*newthread), attr, func_name, arg);
   log_func_exit(self, "pthread_create", arg_buf, ret);
 
   return ret;
@@ -105,7 +102,6 @@ void *retval;
   log_func_enter(self, "pthread_exit", arg_buf);
 
   orig_pthread_exit(retval);
-  log_func_exit(self, "pthread_exit", arg_buf, 0);
 }
 
 int
@@ -115,10 +111,17 @@ void **thread_return;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Thread%u,%p)", (unsigned int)threadid, thread_return);
+  if (thread_return != NULL)
+	sprintf(arg_buf, "(Thread%x,%p->%p)", (unsigned int)threadid, thread_return, *thread_return);
+  else
+	sprintf(arg_buf, "(Thread%x,%p)", (unsigned int)threadid, thread_return);
   log_func_enter(self, "pthread_join", arg_buf);
 
   int ret = orig_pthread_join(threadid, thread_return);
+  if (thread_return != NULL)
+	sprintf(arg_buf, "(Thread%x,%p->%p)", (unsigned int)threadid, thread_return, *thread_return);
+  else
+	sprintf(arg_buf, "(Thread%x,%p)", (unsigned int)threadid, thread_return);
   log_func_exit(self, "pthread_join", arg_buf, ret);
 
   return ret;
@@ -131,10 +134,17 @@ void **thread_return;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Thread%u,%p)", (unsigned int)th, thread_return);
+  if (thread_return != NULL)
+    sprintf(arg_buf, "(Thread%x,%p->%p)", (unsigned int)th, thread_return, *thread_return);
+  else
+    sprintf(arg_buf, "(Thread%x,%p)", (unsigned int)th, thread_return);
   log_func_enter(self, "pthread_tryjoin", arg_buf);
 
   int ret = orig_pthread_tryjoin_np(th, thread_return);
+  if (thread_return != NULL)
+    sprintf(arg_buf, "(Thread%x,%p->%p)", (unsigned int)th, thread_return, *thread_return);
+  else
+    sprintf(arg_buf, "(Thread%x,%p)", (unsigned int)th, thread_return);
   log_func_exit(self, "pthread_tryjoin", arg_buf, ret);
 
   return ret;
@@ -148,10 +158,17 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Thread%u,%p,%lld.%.9ld)", (unsigned int)th, thread_return,(long long)abstime->tv_sec, abstime->tv_nsec);
+  if (thread_return != NULL)
+    sprintf(arg_buf, "(Thread%x,%p->%p,%lld.%.9ld)", (unsigned int)th, thread_return, *thread_return, (long long)abstime->tv_sec, abstime->tv_nsec);
+  else
+    sprintf(arg_buf, "(Thread%x,%p,%lld.%.9ld)", (unsigned int)th, thread_return, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_timedjoin", arg_buf);
 
   int ret = orig_pthread_timedjoin_np(th, thread_return, abstime);
+  if (thread_return != NULL)
+    sprintf(arg_buf, "(Thread%x,%p->%p,%lld.%.9ld)", (unsigned int)th, thread_return, *thread_return, (long long)abstime->tv_sec, abstime->tv_nsec);
+  else
+    sprintf(arg_buf, "(Thread%x,%p,%lld.%.9ld)", (unsigned int)th, thread_return, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_exit(self, "pthread_timedjoin", arg_buf, ret);
 
   return ret;
@@ -163,7 +180,7 @@ pthread_t th;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Thread%u)", (unsigned int)th);
+  sprintf(arg_buf, "(Thread%x)", (unsigned int)th);
   log_func_enter(self, "pthread_detach", arg_buf);
 
   int ret = orig_pthread_detach(th);
@@ -178,10 +195,9 @@ pthread_mutex_t *mutex;
 const pthread_mutexattr_t *mutexattr;
 {
   pthread_t self = pthread_self();
-  libtrace_translate_addresses (mutex, func_buf, MAX_BUF_LEN, NULL, 0);
-  printf("Mutex: %p -> %s\n", mutex, func_buf);
+  const char *mutex_name = translate_address(mutex);
 
-  sprintf(arg_buf, "(Mutex%lu,%p)", (unsigned long)mutex, mutexattr);
+  sprintf(arg_buf, "(Mutex%lx,%s,%p)", (unsigned long)mutex, mutex_name, mutexattr);
   log_func_enter(self, "pthread_mutex_init", arg_buf);
 
   int ret = orig_pthread_mutex_init(mutex, mutexattr);
@@ -196,7 +212,7 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Mutex%lu)", (unsigned long)mutex);
+  sprintf(arg_buf, "(Mutex%lx)", (unsigned long)mutex);
   log_func_enter(self, "pthread_mutex_destroy", arg_buf);
 
   int ret = orig_pthread_mutex_destroy(mutex);
@@ -211,7 +227,7 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Mutex%lu)", (unsigned long)mutex);
+  sprintf(arg_buf, "(Mutex%lx)", (unsigned long)mutex);
   log_func_enter(self, "pthread_mutex_trylock", arg_buf);
 
   int ret = orig_pthread_mutex_trylock(mutex);
@@ -226,10 +242,11 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Mutex%lu)", (unsigned long)mutex);
+  sprintf(arg_buf, "(Mutex%lx)", (unsigned long)mutex);
   log_func_enter(self, "pthread_mutex_lock", arg_buf);
 
   int ret = orig_pthread_mutex_lock(mutex);
+  sprintf(arg_buf, "(Mutex%lx)", (unsigned long)mutex);
   log_func_exit(self, "pthread_mutex_lock", arg_buf, ret);
 
   return ret;
@@ -242,10 +259,11 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Mutex%lu,%lld.%.9ld)", (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
+  sprintf(arg_buf, "(Mutex%lx,%lld.%.9ld)", (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_mutex_timedlock", arg_buf);
 
   int ret = orig_pthread_mutex_timedlock(mutex, abstime);
+  sprintf(arg_buf, "(Mutex%lx,%lld.%.9ld)", (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_exit(self, "pthread_mutex_timedlock", arg_buf, ret);
 
   return ret;
@@ -257,14 +275,13 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Mutex%lu)", (unsigned long)mutex);
+  sprintf(arg_buf, "(Mutex%lx)", (unsigned long)mutex);
   log_func_enter(self, "pthread_mutex_unlock", arg_buf);
 
   int ret = orig_pthread_mutex_unlock(mutex);
   log_func_exit(self, "pthread_mutex_unlock", arg_buf, ret);
 
   return ret;
-
 }
 
 int
@@ -273,10 +290,9 @@ pthread_cond_t *cond;
 const pthread_condattr_t *cond_attr;
 {
   pthread_t self = pthread_self();
-  libtrace_translate_addresses (cond, func_buf, MAX_BUF_LEN, NULL, 0);
-  printf("Cond: %p -> %s\n", cond, func_buf);
+  const char *cond_name = translate_address(cond);
 
-  sprintf(arg_buf, "(Cond%lu,%p)", (unsigned long)cond, cond_attr);
+  sprintf(arg_buf, "(Cond%lx,%s,%p)", (unsigned long)cond, cond_name, cond_attr);
   log_func_enter(self, "pthread_cond_init", arg_buf);
 
   int ret = orig_pthread_cond_init(cond, cond_attr);
@@ -290,7 +306,7 @@ pthread_cond_t *cond;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Cond%lu)", (unsigned long)cond);
+  sprintf(arg_buf, "(Cond%lx)", (unsigned long)cond);
   log_func_enter(self, "pthread_cond_destroy", arg_buf);
 
   int ret = orig_pthread_cond_destroy(cond);
@@ -305,10 +321,11 @@ pthread_cond_t *cond;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Cond%lu)", (unsigned long)cond);
+  sprintf(arg_buf, "(Cond%lx)", (unsigned long)cond);
   log_func_enter(self, "pthread_cond_signal", arg_buf);
 
   int ret = orig_pthread_cond_signal(cond);
+  sprintf(arg_buf, "(Cond%lx)", (unsigned long)cond);
   log_func_exit(self, "pthread_cond_signal", arg_buf, ret);
 
   return ret;
@@ -320,7 +337,7 @@ pthread_cond_t *cond;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Cond%lu)", (unsigned long)cond);
+  sprintf(arg_buf, "(Cond%lx)", (unsigned long)cond);
   log_func_enter(self, "pthread_cond_broadcast", arg_buf);
 
   int ret = orig_pthread_cond_broadcast(cond);
@@ -336,10 +353,11 @@ pthread_mutex_t *mutex;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Cond%lu,Mutex%lu)", (unsigned long)cond, (unsigned long)mutex);
+  sprintf(arg_buf, "(Cond%lx,Mutex%lx)", (unsigned long)cond, (unsigned long)mutex);
   log_func_enter(self, "pthread_cond_wait", arg_buf);
 
   int ret = orig_pthread_cond_wait(cond, mutex);
+  sprintf(arg_buf, "(Cond%lx,Mutex%lx)", (unsigned long)cond, (unsigned long)mutex);
   log_func_exit(self, "pthread_cond_wait", arg_buf, ret);
 
   return ret;
@@ -353,10 +371,11 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Cond%lu,Mutex%lu,%lld.%.9ld)", (unsigned long)cond, (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
+  sprintf(arg_buf, "(Cond%lx,Mutex%lx,%lld.%.9ld)", (unsigned long)cond, (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_cond_timedwait", arg_buf);
 
   int ret = orig_pthread_cond_timedwait(cond, mutex, abstime);
+  sprintf(arg_buf, "(Cond%lx,Mutex%lx,%lld.%.9ld)", (unsigned long)cond, (unsigned long)mutex, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_exit(self, "pthread_cond_timedwait", arg_buf, ret);
 
   return ret;
@@ -368,8 +387,9 @@ pthread_rwlock_t *rwlock;
 const pthread_rwlockattr_t *attr;
 {
   pthread_t self = pthread_self();
+  const char *rwlock_name = translate_address(rwlock);
 
-  sprintf(arg_buf, "(RWLock%lu,%p)", (unsigned long)rwlock, attr);
+  sprintf(arg_buf, "(RWLock%lx,%s,%p)", (unsigned long)rwlock, rwlock_name, attr);
   log_func_enter(self, "pthread_rwlock_init", arg_buf);
 
   int ret = orig_pthread_rwlock_init(rwlock, attr);
@@ -384,7 +404,7 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_destroy", arg_buf);
 
   int ret = orig_pthread_rwlock_destroy(rwlock);
@@ -399,10 +419,11 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_rdlock", arg_buf);
 
   int ret = orig_pthread_rwlock_rdlock(rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_exit(self, "pthread_rwlock_rdlock", arg_buf, ret);
 
   return ret;
@@ -414,7 +435,7 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_tryrdlock", arg_buf);
 
   int ret = orig_pthread_rwlock_tryrdlock(rwlock);
@@ -430,10 +451,11 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
+  sprintf(arg_buf, "(RWLock%lx,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_rwlock_timedrdlock", arg_buf);
 
   int ret = orig_pthread_rwlock_timedrdlock(rwlock, abstime);
+  sprintf(arg_buf, "(RWLock%lx,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_exit(self, "pthread_rwlock_timedrdlock", arg_buf, ret);
 
   return ret;
@@ -445,10 +467,11 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_wrlock", arg_buf);
 
   int ret = orig_pthread_rwlock_wrlock(rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_exit(self, "pthread_rwlock_wrlock", arg_buf, ret);
 
   return ret;
@@ -460,7 +483,7 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_trywrlock", arg_buf);
 
   int ret = orig_pthread_rwlock_trywrlock(rwlock);
@@ -476,10 +499,11 @@ const struct timespec *abstime;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
+  sprintf(arg_buf, "(RWLock%lx,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_enter(self, "pthread_rwlock_timedwrlock", arg_buf);
 
   int ret = orig_pthread_rwlock_timedwrlock(rwlock, abstime);
+  sprintf(arg_buf, "(RWLock%lx,%lld.%.9ld)", (unsigned long)rwlock, (long long)abstime->tv_sec, abstime->tv_nsec);
   log_func_exit(self, "pthread_rwlock_timedwrlock", arg_buf, ret);
 
   return ret;
@@ -491,7 +515,7 @@ pthread_rwlock_t *rwlock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(RWLock%lu)", (unsigned long)rwlock);
+  sprintf(arg_buf, "(RWLock%lx)", (unsigned long)rwlock);
   log_func_enter(self, "pthread_rwlock_unlock", arg_buf);
 
   int ret = orig_pthread_rwlock_unlock(rwlock);
@@ -506,8 +530,9 @@ pthread_spinlock_t *lock;
 int pshared;
 {
   pthread_t self = pthread_self();
+  const char *lock_name = translate_address(lock);
 
-  sprintf(arg_buf, "(Spin%lu,%d)", (unsigned long)lock, pshared);
+  sprintf(arg_buf, "(Spin%lx,%s,%d)", (unsigned long)lock, lock_name, pshared);
   log_func_enter(self, "pthread_spin_init", arg_buf);
 
   int ret = orig_pthread_spin_init(lock, pshared);
@@ -522,7 +547,7 @@ pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Spin%lu)", (unsigned long)lock);
+  sprintf(arg_buf, "(Spin%lx)", (unsigned long)lock);
   log_func_enter(self, "pthread_spin_destroy", arg_buf);
 
   int ret = orig_pthread_spin_destroy(lock);
@@ -537,10 +562,11 @@ pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Spin%lu)", (unsigned long)lock);
+  sprintf(arg_buf, "(Spin%lx)", (unsigned long)lock);
   log_func_enter(self, "pthread_spin_lock", arg_buf);
 
   int ret = orig_pthread_spin_lock(lock);
+  sprintf(arg_buf, "(Spin%lx)", (unsigned long)lock);
   log_func_exit(self, "pthread_spin_lock", arg_buf, ret);
 
   return ret;
@@ -552,7 +578,7 @@ pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Spin%lu)", (unsigned long)lock);
+  sprintf(arg_buf, "(Spin%lx)", (unsigned long)lock);
   log_func_enter(self, "pthread_spin_trylock", arg_buf);
 
   int ret = orig_pthread_spin_trylock(lock);
@@ -566,7 +592,7 @@ pthread_spinlock_t *lock;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Spin%lu)", (unsigned long)lock);
+  sprintf(arg_buf, "(Spin%lx)", (unsigned long)lock);
   log_func_enter(self, "pthread_spin_unlock", arg_buf);
 
   int ret = orig_pthread_spin_unlock(lock);
@@ -582,8 +608,9 @@ const pthread_barrierattr_t *attr;
 unsigned int count;
 {
   pthread_t self = pthread_self();
+  const char *barrier_name = translate_address(barrier);
 
-  sprintf(arg_buf, "(Barrier%lu,%p,%u)", (unsigned long)barrier, attr, count);
+  sprintf(arg_buf, "(Barrier%lx,%s,%p,%u)", (unsigned long)barrier, barrier_name, attr, count);
   log_func_enter(self, "pthread_barrier_init", arg_buf);
 
   int ret = orig_pthread_barrier_init(barrier, attr, count);
@@ -598,7 +625,7 @@ pthread_barrier_t *barrier;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Barrier%lu)", (unsigned long)barrier);
+  sprintf(arg_buf, "(Barrier%lx)", (unsigned long)barrier);
   log_func_enter(self, "pthread_barrier_destroy", arg_buf);
 
   int ret = orig_pthread_barrier_destroy(barrier);
@@ -613,10 +640,11 @@ pthread_barrier_t *barrier;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Barrier%lu)", (unsigned long)barrier);
+  sprintf(arg_buf, "(Barrier%lx)", (unsigned long)barrier);
   log_func_enter(self, "pthread_barrier_wait", arg_buf);
 
   int ret = orig_pthread_barrier_wait(barrier);
+  sprintf(arg_buf, "(Barrier%lx)", (unsigned long)barrier);
   log_func_exit(self, "pthread_barrier_wait", arg_buf, ret);
 
   return ret;
@@ -628,7 +656,7 @@ pthread_t th;
 {
   pthread_t self = pthread_self();
 
-  sprintf(arg_buf, "(Thread%u)", (unsigned int)th);
+  sprintf(arg_buf, "(Thread%x)", (unsigned int)th);
   log_func_enter(self, "pthread_cancel", arg_buf);
 
   int ret = orig_pthread_cancel(th);
@@ -646,14 +674,10 @@ _init(void)
   pid_t pid = getpid();
   sprintf(link, "/proc/%d/exe", pid);
 
+  // get path to executable
   if ((readlink(link, path, MAX_BUF_LEN - 1)) == -1) {
     perror("readlink");
     exit(EXIT_FAILURE);
-  }
-
-  if (0 != libtrace_init(path, NULL, NULL)) {
-    fprintf(stderr, "libtrace_init() failed.");
-    exit(EXIT_FAILURE); 
   }
 
   // open a file for logging and log program name
@@ -707,7 +731,6 @@ _init(void)
 void
 _fini()
 {
-  libtrace_close();
   fclose(log_fp);
 }
 
@@ -716,7 +739,7 @@ void log_func_enter(pthread_t tid, char *func_name, char *args) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts); 
 
-    fprintf(log_fp, "%lld.%.9ld Thread%u ENTER %s %s -\n",
+    fprintf(log_fp, "%lld.%.9ld Thread%x ENTER %s %s -\n",
 	    (long long)ts.tv_sec, ts.tv_nsec,
 	    (unsigned int)tid, func_name, args);
     log_count++;
@@ -728,10 +751,19 @@ void log_func_exit(pthread_t tid, char *func_name, char *args, int ret) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts); 
 
-    fprintf(log_fp, "%lld.%.9ld Thread%u EXIT %s %s %d\n",
+    fprintf(log_fp, "%lld.%.9ld Thread%x EXIT %s %s %d\n",
 	    (long long)ts.tv_sec, ts.tv_nsec,
 	    (unsigned int)tid, func_name, args, ret);
     log_count++;
   }
+  fflush(log_fp);
+}
+
+const char *translate_address(const void *addr) {
+  Dl_info DlInfo;
+
+  if (dladdr(addr, &DlInfo) != 0)
+    return DlInfo.dli_sname;
+  return NULL;
 }
 

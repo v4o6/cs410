@@ -26,10 +26,10 @@
 /* global mutex for our program. assignment initializes it. */
 /* note that we use a RECURSIVE mutex, since a handler      */
 /* thread might try to lock it twice consecutively.         */
-pthread_mutex_t request_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+pthread_mutex_t request_mutex; // = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 /* global condition variable for our program. assignment initializes it. */
-pthread_cond_t  got_request   = PTHREAD_COND_INITIALIZER;
+pthread_cond_t  got_request; //   = PTHREAD_COND_INITIALIZER;
 
 /* are we done creating new requests? */
 int done_creating_requests = 0;
@@ -43,6 +43,12 @@ main(int argc, char* argv[])
     struct requests_queue* requests = NULL;  /* pointer to requests queue */
     struct handler_threads_pool* handler_threads = NULL;
 					       /* list of handler threads */
+    /* init request_mutex and got_request*/
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&request_mutex, &attr);
+    pthread_cond_init(&got_request, NULL);
 
     /* create the requests queue */
     requests = init_requests_queue(&request_mutex, &got_request);
