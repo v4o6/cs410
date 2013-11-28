@@ -9,20 +9,20 @@
 #include "handler_threads_pool.h"   /* handler thread list functions/structs */
 
 /* total number of requests */
-#define NUM_REQUESTS 4 /*600*/
+#define NUM_REQUESTS 8 /*600*/
 
 /* number of initial threads used to service requests, and max number */
 /* of handler threads to create during "high pressure" times.         */
 #define NUM_HANDLER_THREADS 1 /*3*/
-#define MAX_NUM_HANDLER_THREADS 3 /*14*/
+#define MAX_NUM_HANDLER_THREADS 2 /*14*/
 
 /* number of requests on the queue warranting creation of new threads */
 #define HIGH_REQUESTS_WATERMARK 3 /*15*/
 #define LOW_REQUESTS_WATERMARK 1 /*3*/
 
 /* chance of a 1 ns delay occuring after a request */
-#define DELAY_RATIO_NUM	1 /* 3 */
-#define DELAY_RATIO_DEN 2 /* 4 */
+#define DELAY_RATIO_NUM	3 /* 3 */
+#define DELAY_RATIO_DEN 4 /* 4 */
 
 /* global mutex for our program. assignment initializes it. */
 /* note that we use a RECURSIVE mutex, since a handler      */
