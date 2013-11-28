@@ -1,7 +1,5 @@
 #!/usr/bin/perl -w
-# Updated parser/formatter, that now targets pthread library instead
-# Skeleton laid out, the printed lines will depend on what the final log file
-# will look like.
+# scripting flags
 use strict;
 use warnings;
 use Data::Dumper;
