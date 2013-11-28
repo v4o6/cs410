@@ -8,7 +8,7 @@ use Data::Dumper;
 
 # Config
 my $maxFrames = 128; #512
-my $logfile = "threadtrace.log"; #"/tmp/libthreadtrace.log"
+my $logfile = "libthreadtrace.log"; #"/tmp/libthreadtrace.log"
 
 # Globals
 my $timestamp;
