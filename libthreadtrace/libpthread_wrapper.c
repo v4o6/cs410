@@ -533,7 +533,7 @@ pthread_spinlock_t *lock;
 int pshared;
 {
   pthread_t self = pthread_self();
-  const char *lock_name = translate_address(lock);
+  const char *lock_name = translate_address((const void *)lock);
 
   sprintf(arg_buf, "(Spin%lx,%s,%d)", (unsigned long)lock, lock_name, pshared);
   log_func_enter(self, "pthread_spin_init", arg_buf);
@@ -672,8 +672,8 @@ pthread_t th;
 void
 _init(void) 
 {
-  char link[MAX_BUF_LEN] = {0};
-  char path[MAX_BUF_LEN] = {0};
+  static char link[MAX_BUF_LEN] = {0};
+  static char path[MAX_BUF_LEN] = {0};
   pid_t pid = getpid();
   sprintf(link, "/proc/%d/exe", pid);
 
