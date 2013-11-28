@@ -230,37 +230,46 @@ sub WriteDOTFile {
 					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odot,color=grey,penwidth=3];\n";
 				}
 				if ($objects{$key}{'Links'}{$linkKey} eq "cancel") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=normal,color=yellow,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=daimond,color=yellow,penwidth=3];\n";
 				}
 				if ($objects{$key}{'Links'}{$linkKey} eq "endcancel") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=normal,color=grey,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=daimond,color=grey,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=normal,color=red,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
+					print GRAPHFILE "$key -> $linkKey" . " [color=blue,penwidth=3];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
+					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
+				}
+				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
+					print GRAPHFILE "$key -> $linkKey" . " [color=yellow,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=normal,color=green,dir=back,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [color=green,dir=back,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "failedlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=normal,color=grey,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,color=grey,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "unlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=normal,color=green,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [color=green,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endunlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=normal,color=grey,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq 'cond-endunlock') {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=normal,color=grey,dir=back,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "condwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=daimond,color=red,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=dot,color=red,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endcondwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=daimond,color=grey,dir=back,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=dot,color=grey,dir=back,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "timedout") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=daimond,color=grey,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
 					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=green,penwidth=3];\n";
@@ -274,17 +283,8 @@ sub WriteDOTFile {
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endbroadcast") {
 					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwdith=6];\n";
 				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=blue,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=yellow,penwidth=3];\n";
-				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "barrierwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=black,penwidth=3];\n";
+					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=yellow,penwidth=3];\n";
 				}
 				elsif ($objects{$key}{'Links'}{$linkKey} eq "endbarrierwait") {
 					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
