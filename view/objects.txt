@@ -1,8 +1,8 @@
 $VAR1 = 'Threadb3f16700';
 $VAR2 = {
           'Links' => {
-                       'Cond602b20' => 'returned',
-                       'Mutex602ae0' => 'unlocked'
+                       'Cond602b20' => 'endcondwait',
+                       'Mutex602ae0' => 'endunlock'
                      },
           'Type' => 'Thread',
           'Status' => 'Dead',
@@ -12,7 +12,7 @@ $VAR2 = {
 $VAR3 = 'Threadb3d14700';
 $VAR4 = {
           'Links' => {
-                       'Mutex602ae0' => 'unlocked'
+                       'Mutex602ae0' => 'endunlock'
                      },
           'Type' => 'Thread',
           'Status' => 'Dead',
@@ -22,10 +22,10 @@ $VAR4 = {
 $VAR5 = 'Threadb3b132e0';
 $VAR6 = {
           'Links' => {
-                       'Threadb3f16700' => 'joined',
-                       'Threadb3d14700' => 'joined',
+                       'Threadb3f16700' => 'endjoin',
+                       'Threadb3d14700' => 'endjoin',
                        'Cond602b20' => 'endbroadcast',
-                       'Mutex602ae0' => 'unlocked'
+                       'Mutex602ae0' => 'endunlock'
                      },
           'Type' => 'Thread',
           'Status' => 'Alive',

@@ -73,11 +73,11 @@
 			<script>
 				var abc;
 				LoadStateView(1,"output001.svg");
-LoadState(1 -1,"Threadb3b132e0","Thread","Alive","{root}","Threadb3b132e0","ENTER","pthread_mutex_init","Mutex602ae0,request_mutex,0x7fff4d8aa640");LoadStateView(1,"output001.svg");
-LoadState(1 -1,"Mutex602ae0","Mutex","Unlocked","request_mutex","Threadb3b132e0","ENTER","pthread_mutex_init","Mutex602ae0,request_mutex,0x7fff4d8aa640");LoadStateView(2,"output002.svg");
-LoadState(2 -1,"Threadb3b132e0","Thread","Alive","{root}","Threadb3b132e0","ENTER","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(2,"output002.svg");
-LoadState(2 -1,"Cond602b20","Condition Variable","Unblocked","got_request","Threadb3b132e0","ENTER","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(2,"output002.svg");
-LoadState(2 -1,"Mutex602ae0","Mutex","Unlocked","request_mutex","Threadb3b132e0","ENTER","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(3,"output003.svg");
+LoadState(1 -1,"Threadb3b132e0","Thread","Alive","{root}","Threadb3b132e0","EXIT","pthread_mutex_init","Mutex602ae0,request_mutex,0x7fff4d8aa640");LoadStateView(1,"output001.svg");
+LoadState(1 -1,"Mutex602ae0","Mutex","Unlocked","request_mutex","Threadb3b132e0","EXIT","pthread_mutex_init","Mutex602ae0,request_mutex,0x7fff4d8aa640");LoadStateView(2,"output002.svg");
+LoadState(2 -1,"Threadb3b132e0","Thread","Alive","{root}","Threadb3b132e0","EXIT","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(2,"output002.svg");
+LoadState(2 -1,"Cond602b20","Condition Variable","Unblocked","got_request","Threadb3b132e0","EXIT","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(2,"output002.svg");
+LoadState(2 -1,"Mutex602ae0","Mutex","Unlocked","request_mutex","Threadb3b132e0","EXIT","pthread_cond_init","Cond602b20,got_request,(nil)");LoadStateView(3,"output003.svg");
 LoadState(3 -1,"Threadb3d14700","Thread","Alive","handle_requests_loop","Threadb3b132e0","EXIT","pthread_create","Threadb3d14700,(nil),handle_requests_loop,0x145d310");LoadStateView(3,"output003.svg");
 LoadState(3 -1,"Threadb3b132e0","Thread","Alive","{root}","Threadb3b132e0","EXIT","pthread_create","Threadb3d14700,(nil),handle_requests_loop,0x145d310");LoadStateView(3,"output003.svg");
 LoadState(3 -1,"Cond602b20","Condition Variable","Unblocked","got_request","Threadb3b132e0","EXIT","pthread_create","Threadb3d14700,(nil),handle_requests_loop,0x145d310");LoadStateView(3,"output003.svg");

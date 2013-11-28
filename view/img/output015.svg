@@ -23,8 +23,7 @@
 </g>
 <!-- Threadb3f16700&#45;&gt;Cond602b20 -->
 <g id="edge2" class="edge"><title>Threadb3f16700&#45;&gt;Cond602b20</title>
-<path fill="none" stroke="red" stroke-width="3" d="M215.117,-325.499C195.096,-282.955 157.825,-203.752 133.213,-151.452"/>
-<polygon fill="red" stroke="red" points="136.348,-149.894 128.923,-142.336 130.014,-152.875 136.348,-149.894"/>
+<path fill="none" stroke="red" stroke-width="3" d="M215.117,-325.499C193.894,-280.4 153.287,-194.109 128.923,-142.336"/>
 </g>
 <!-- Mutex602ae0 -->
 <g id="node5" class="node"><title>Mutex602ae0</title>

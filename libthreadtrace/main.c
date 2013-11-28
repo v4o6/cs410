@@ -1,6 +1,7 @@
 #include <stdio.h>             /* standard I/O routines                      */
 #define __USE_GNU
 #include <pthread.h>           /* pthread functions and data structures      */
+#include <time.h>	       /* seed for srand() */
 #include <stdlib.h>            /* rand() and srand() functions               */
 #include <unistd.h>            /* sleep()                                    */
 #include <assert.h>            /* assert()                                   */
@@ -8,20 +9,20 @@
 #include "handler_threads_pool.h"   /* handler thread list functions/structs */
 
 /* total number of requests */
-#define NUM_REQUESTS 8 /*600*/
+#define NUM_REQUESTS 4 /*600*/
 
 /* number of initial threads used to service requests, and max number */
 /* of handler threads to create during "high pressure" times.         */
 #define NUM_HANDLER_THREADS 1 /*3*/
-#define MAX_NUM_HANDLER_THREADS 2 /*14*/
+#define MAX_NUM_HANDLER_THREADS 3 /*14*/
 
 /* number of requests on the queue warranting creation of new threads */
 #define HIGH_REQUESTS_WATERMARK 3 /*15*/
 #define LOW_REQUESTS_WATERMARK 1 /*3*/
 
 /* chance of a 1 ns delay occuring after a request */
-#define DELAY_RATIO_NUM	7 /* 3 */
-#define DELAY_RATIO_DEN 8 /* 4 */
+#define DELAY_RATIO_NUM	1 /* 3 */
+#define DELAY_RATIO_DEN 2 /* 4 */
 
 /* global mutex for our program. assignment initializes it. */
 /* note that we use a RECURSIVE mutex, since a handler      */
@@ -43,6 +44,9 @@ main(int argc, char* argv[])
     struct requests_queue* requests = NULL;  /* pointer to requests queue */
     struct handler_threads_pool* handler_threads = NULL;
 					       /* list of handler threads */
+    /* set pseudorandom seed */
+    srand(time(NULL));
+
     /* init request_mutex and got_request*/
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
@@ -94,7 +98,7 @@ main(int argc, char* argv[])
 	/* other threads to run and handle some requests.  */
 	if (rand() > DELAY_RATIO_NUM*(RAND_MAX/DELAY_RATIO_DEN)) { /* this is done about DELAY_RATIO_NUM/DELAY_RATIO_DEN of the time */
 	    delay.tv_sec = 0;
-	    delay.tv_nsec = 1;
+	    delay.tv_nsec = 1000;
 	    nanosleep(&delay, NULL);
 	}
     }

@@ -14,14 +14,14 @@ $(TARGET): $(TARGET_SRC)
 libpthread_wrapper.so: libpthread_wrapper.o
 	$(LD) $^ -o $@ -shared -ldl -lrt
 
-libpthread_wrapper.o: libpthread_wrapper.c Makefile
+libpthread_wrapper.o: libpthread_wrapper.c
 	$(CC) -c $< -fPIC -DPIC -Wall
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 run: all
-	./run.sh $(TARGET)
+	./run.sh ./$(TARGET)
 
 .IGNORE: clean 
 clean:

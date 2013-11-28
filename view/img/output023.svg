@@ -61,8 +61,8 @@
 </g>
 <!-- Threadb3b132e0&#45;&gt;Cond602b20 -->
 <g id="edge16" class="edge"><title>Threadb3b132e0&#45;&gt;Cond602b20</title>
-<path fill="none" stroke="grey" stroke-dasharray="5,2" d="M365.762,-587.966C302.131,-555.844 196.178,-493.395 146,-404 102.548,-326.587 104.511,-219.879 108.05,-157.091"/>
-<polygon fill="grey" stroke="grey" points="111.549,-157.216 108.648,-147.026 104.561,-156.801 111.549,-157.216"/>
+<path fill="none" stroke="grey" stroke-dasharray="5,2" d="M365.762,-587.966C302.131,-555.844 196.178,-493.395 146,-404 102.1,-325.789 104.556,-217.675 108.16,-155.164"/>
+<ellipse fill="grey" stroke="grey" cx="108.409" cy="-151.019" rx="4" ry="4"/>
 </g>
 <!-- Threadb3b132e0&#45;&gt;Mutex602ae0 -->
 <g id="edge6" class="edge"><title>Threadb3b132e0&#45;&gt;Mutex602ae0</title>

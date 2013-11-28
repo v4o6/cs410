@@ -10,7 +10,7 @@
 
 #define MAX_BUF_LEN	(128)
 static char arg_buf[MAX_BUF_LEN] = {0};
-#define MAX_LOG_LINES	(1024)
+#define MAX_LOG_LINES	(4096)
 static int log_count = 0;
 
 FILE *log_fp;
@@ -18,6 +18,7 @@ void log_func_enter(pthread_t tid, char *func_name, char *args);
 void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
 const char *translate_address(const void *addr);
 
+// pointers to the original pthread functions
 int (*orig_pthread_create) (pthread_t *newthread, 
 				const pthread_attr_t *attr,
 				void *(*start_routine) (void *),
@@ -72,6 +73,7 @@ int (*orig_pthread_barrier_wait) (pthread_barrier_t *barrier);
 int (*orig_pthread_cancel) (pthread_t th);
 
 
+// wrapper function definitions
 int
 pthread_create (newthread, attr, start_routine, arg)
 pthread_t *newthread;
@@ -284,6 +286,7 @@ pthread_mutex_t *mutex;
   return ret;
 }
 
+// TODO: investigate why this causes issues in some pthreads programs.  Tested programs: vlc and (on GNU/Linux systems) /usr/games/sol (solitaire)
 int
 pthread_cond_init (cond, cond_attr)
 pthread_cond_t *cond;
