@@ -206,10 +206,10 @@ sub WriteDOTFile {
 				my @children = split ',', $objects{$key}{'Children'};
 				foreach my $child (@children) {
 					if ($objects{$child}{'Status'} ne "Dead") {
-						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,penwidth=3];\n";
+						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=open,penwidth=3];\n";
 					}
 					else {
-						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,color=grey,penwidth=3];\n";
+						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=open,color=grey,penwidth=3];\n";
 					}
 				}
 				# print out edges for all other links with objects
@@ -287,10 +287,10 @@ sub WriteDOTFile {
 						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwdith=6];\n";
 					}
 					elsif ($objects{$key}{'Links'}{$linkKey} eq "barrierwait") {
-						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=yellow,penwidth=3];\n";
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=tee,color=yellow,penwidth=3];\n";
 					}
 					elsif ($objects{$key}{'Links'}{$linkKey} eq "endbarrierwait") {
-						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=tee,color=grey,penwidth=3];\n";
 					}
 				}
 			}
