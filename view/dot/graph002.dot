@@ -1,8 +1,0 @@
-digraph G {
-graph[center=true, ratio=1];
-Threadb3b132e0 [color=black,label="Threadb3b132e0\n{root}"];
-Threadb3b132e0 -> Mutex602ae0 [style=dotted,arrowhead=normal,penwidth=3];
-Threadb3b132e0 -> Cond602b20 [style=dotted,arrowhead=normal,penwidth=3];
-Cond602b20 [shape=parallelogram,color=black,label="Cond602b20\ngot_request"];
-Mutex602ae0 [shape=trapezium,color=black,label="Mutex602ae0\nrequest_mutex"];
-}

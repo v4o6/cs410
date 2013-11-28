@@ -202,99 +202,185 @@ sub WriteDOTFile {
 			my $label = $key .'\n' . $objects{$key}{'Label'};
 			if ($objects{$key}{'Status'} eq "Alive") {
 				print GRAPHFILE "$key [color=black,label=\"$label\"];\n";
+				# print out edges for each child thread
+				my @children = split ',', $objects{$key}{'Children'};
+				foreach my $child (@children) {
+					if ($objects{$child}{'Status'} ne "Dead") {
+						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,penwidth=3];\n";
+					}
+					else {
+						print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,color=grey,penwidth=3];\n";
+					}
+				}
+				# print out edges for all other links with objects
+				foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
+					if ($objects{$key}{'Links'}{$linkKey} eq "join") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odot,color=red,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endjoin") {
+						print GRAPHFILE "$linkKey -> $key" . " [arrowhead=odot,color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "failedjoin") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "cancel") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=yellow,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endcancel") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=blue,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=green,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endrdlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=blue,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endwrlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=green,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endspinlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=yellow,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "failedlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "unlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=green,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endunlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq 'cond-unlocked') {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "condwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odiamond,color=red,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endcondwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odiamond,color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "timedout") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odiamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=green,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endsignal") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "broadcast") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=green,penwidth=6];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endbroadcast") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwdith=6];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "barrierwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=yellow,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endbarrierwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
+					}
+				}
 			}
-			if ($objects{$key}{'Status'} eq "Dead") {
+			else { # $objects{$key}{'Status'} eq "Dead"
 				print GRAPHFILE "$key [color=lightgrey,label=\"$label\"];\n";
-			}
-			# print out edges between child and parent threads
-			my @children = split ',', $objects{$key}{'Children'};
-			foreach my $child (@children) {
-				if ($objects{$child}{'Status'} ne "Dead") {
+				# print out edges for each child thread
+				my @children = split ',', $objects{$key}{'Children'};
+				foreach my $child (@children) {
 					print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,penwidth=3];\n";
 				}
-				else {
-					print GRAPHFILE "$key -> $child [style=dotted,arrowhead=normal,color=grey,penwidth=3];\n";
-				}
-			}
-			# print out all other links between threads and objects
-			foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
-				if ($objects{$key}{'Links'}{$linkKey} eq "join") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odot,color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endjoin") {
-					print GRAPHFILE "$linkKey -> $key" . " [arrowhead=odot,color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "failedjoin") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odot,color=grey,penwidth=3];\n";
-				}
-				if ($objects{$key}{'Links'}{$linkKey} eq "cancel") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=daimond,color=yellow,penwidth=3];\n";
-				}
-				if ($objects{$key}{'Links'}{$linkKey} eq "endcancel") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=daimond,color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=blue,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=green,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endrdlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=blue,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endwrlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=green,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endspinlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=yellow,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "failedlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "unlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=green,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endunlock") {
-					print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq 'cond-endunlock') {
-					print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "condwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=dot,color=red,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endcondwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=dot,color=grey,dir=back,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "timedout") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=green,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endsignal") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "broadcast") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=green,penwidth=6];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endbroadcast") {
-					print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwdith=6];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "barrierwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=yellow,penwidth=3];\n";
-				}
-				elsif ($objects{$key}{'Links'}{$linkKey} eq "endbarrierwait") {
-					print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
+				# print out edges for all other links with objects
+				foreach my $linkKey (keys %{$objects{$key}{'Links'}}) {
+					if ($objects{$key}{'Links'}{$linkKey} eq "join") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endjoin") {
+						print GRAPHFILE "$linkKey -> $key" . " [arrowhead=odot,color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "failedjoin") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "cancel") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endcancel") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=dot,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "lock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "rdlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "wrlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "spinlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endrdlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endwrlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endspinlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "failedlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "unlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endunlock") {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq 'cond-unlocked') {
+						print GRAPHFILE "$key -> $linkKey" . " [color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "condwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odiamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endcondwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=odiamond,color=grey,dir=back,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "timedout") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=odiamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "signal") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endsignal") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "broadcast") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwidth=6];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endbroadcast") {
+						print GRAPHFILE "$key -> $linkKey" . " [style=dashed,arrowhead=diamond,color=grey,penwdith=6];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "barrierwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
+					}
+					elsif ($objects{$key}{'Links'}{$linkKey} eq "endbarrierwait") {
+						print GRAPHFILE "$key -> $linkKey" . " [arrowhead=box,color=grey,penwidth=3];\n";
+					}
 				}
 			}
 		}
@@ -489,17 +575,15 @@ while (<LOGFILE>) {
 		}
 	}
 	elsif(($functionName eq "pthread_mutex_lock" || $functionName eq "pthread_mutex_trylock" || $functionName eq "pthread_mutex_timedlock") && $enterExit eq "ENTER") {
-		if (exists $objects{$arguments[0]}) {
-			if ($objects{$arguments[0]}{'Locked by'} ne $callingThread) {
-				$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
-			}
+		if (exists $objects{$arguments[0]} && $objects{$arguments[0]}{'Locked by'} ne $callingThread) {
+			$objects{$callingThread}{'Links'}{$arguments[0]} = 'lock';
 		}
 		else {
 			next;
 		}
 	}
 	elsif($functionName eq "pthread_mutex_lock" && $enterExit eq "EXIT" && $return eq "0") {
-		if (exists $objects{$arguments[0]}) {
+		if (exists $objects{$arguments[0]} && $objects{$arguments[0]}{'Locked by'} ne $callingThread) {
 			$objects{$arguments[0]}{'Status'} = 'Locked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endlock';
 			$objects{$arguments[0]}{'Locked by'} = $callingThread;
@@ -513,8 +597,8 @@ while (<LOGFILE>) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'failedlock';
 		}
 		else {
-			if (exists $objects{$arguments[0]}) {
-        	                $objects{$arguments[0]}{'Status'} = 'Locked';
+			if (exists $objects{$arguments[0]} && $objects{$arguments[0]}{'Locked by'} ne $callingThread) {
+				$objects{$arguments[0]}{'Status'} = 'Locked';
 				$objects{$callingThread}{'Links'}{$arguments[0]} = 'endlock';
 				$objects{$arguments[0]}{'Locked by'} = $callingThread;
         	        }
@@ -524,7 +608,7 @@ while (<LOGFILE>) {
 		}
 	}
 	elsif($functionName eq "pthread_mutex_unlock" && $enterExit eq "ENTER") {
-		if (exists $objects{$arguments[0]}) {
+		if (exists $objects{$arguments[0]} && $objects{$arguments[0]}{'Locked by'} eq $callingThread) {
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'unlock';
 		}
 		else {
@@ -532,7 +616,7 @@ while (<LOGFILE>) {
 		}
 	}	
 	elsif($functionName eq "pthread_mutex_unlock" && $enterExit eq "EXIT" && $return eq "0") {
-		if (exists $objects{$arguments[0]}) {
+		if (exists $objects{$arguments[0]} && $objects{$arguments[0]}{'Locked by'} eq $callingThread) {
 			$objects{$arguments[0]}{'Status'} = 'Unlocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endunlock';
 			$objects{$arguments[0]}{'Locked by'} = '';
@@ -569,8 +653,7 @@ while (<LOGFILE>) {
 			$objects{$arguments[0]}{'Status'} = 'Blocked';
 			$objects{$arguments[0]}{'Count'}++;
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'condwait';
-			$objects{$arguments[1]}{'Status'} = 'Unlocked';
-			$objects{$callingThread}{'Links'}{$arguments[1]} = 'cond-endunlock';
+			$objects{$callingThread}{'Links'}{$arguments[1]} = 'cond-unlocked';
 		}
 		else {
 			next;
@@ -583,8 +666,6 @@ while (<LOGFILE>) {
 				$objects{$arguments[0]}{'Status'} = 'Unblocked';
 			}
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endcondwait';
-			$objects{$arguments[1]}{'Status'} = 'Locked';
-			$objects{$callingThread}{'Links'}{$arguments[1]} = 'endlock';
 		}
 		else {
 			next;
@@ -660,7 +741,7 @@ while (<LOGFILE>) {
 	}
 	elsif(($functionName eq "pthread_rwlock_rdlock" || $functionName eq "pthread_rwlock_tryrdlock" || $functionName eq "pthread_rwlock_timedrdlock") && $enterExit eq "ENTER") {
 		if (exists $objects{$arguments[0]}) {
-			if (exists ($objects{$arguments[0]}{'Readers'}{$callingThread}) {
+			if (exists $objects{$arguments[0]}{'Readers'}{$callingThread}) {
 				next;	
 			}
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'rdlock';
@@ -671,12 +752,12 @@ while (<LOGFILE>) {
 	}
 	elsif($functionName eq "pthread_rwlock_rdlock" && $enterExit eq "EXIT" && $return eq "0") {
 		if (exists $objects{$arguments[0]}) {
-			if (exists ($objects{$arguments[0]}{'Readers'}{$callingThread}) {
+			if (exists $objects{$arguments[0]}{'Readers'}{$callingThread}) {
 				next;	
 			}
 			$objects{$arguments[0]}{'Status'} = 'RDLocked';
 			$objects{$callingThread}{'Links'}{$arguments[0]} = 'endrdlock';
-			$objects{arguments[0]}{'ReaderCount'}++;
+			$objects{$arguments[0]}{'ReaderCount'}++;
 		}
 		else {
 			next;
@@ -688,12 +769,12 @@ while (<LOGFILE>) {
 		}
 		else {
 			if (exists $objects{$arguments[0]}) {
-				if (exists ($objects{$arguments[0]}{'Readers'}{$callingThread}) {
+				if (exists $objects{$arguments[0]}{'Readers'}{$callingThread}) {
 					next;	
 				}
         	                $objects{$arguments[0]}{'Status'} = 'RDLocked';
 				$objects{$callingThread}{'Links'}{$arguments[0]} = 'endrdlock';
-				$objects{arguments[0]}{'ReaderCount'}++;
+				$objects{$arguments[0]}{'ReaderCount'}++;
         	        }
 			else {
 				next;
@@ -745,10 +826,10 @@ while (<LOGFILE>) {
 	}	
 	elsif($functionName eq "pthread_rwlock_unlock" && $enterExit eq "EXIT" && $return eq "0") {
 		if (exists $objects{$arguments[0]}) {
-			if (exists $objects{arguments[0]}{'Readers'}{$callingThread}) {
-				$objects{arguments[0]}{'ReaderCount'}--;
-				delete $objects{arguments[0]}{'Readers'}{$callingThread};
-				if ($objects{arguments[0]}{'ReaderCount'} == 0) {
+			if (exists $objects{$arguments[0]}{'Readers'}{$callingThread}) {
+				$objects{$arguments[0]}{'ReaderCount'}--;
+				delete $objects{$arguments[0]}{'Readers'}{$callingThread};
+				if ($objects{$arguments[0]}{'ReaderCount'} == 0) {
 					$objects{$arguments[0]}{'Status'} = 'Unlocked';
 				}
 			}

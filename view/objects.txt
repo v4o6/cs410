@@ -1,5 +1,16 @@
-$VAR1 = 'Threadb3f16700';
+$VAR1 = 'Threada775700';
 $VAR2 = {
+          'Links' => {
+                       'Cond602b20' => 'condwait',
+                       'Mutex602ae0' => 'cond-unlocked'
+                     },
+          'Type' => 'Thread',
+          'Status' => 'Dead',
+          'Children' => '',
+          'Label' => 'handle_requests_loop'
+        };
+$VAR3 = 'Threada977700';
+$VAR4 = {
           'Links' => {
                        'Cond602b20' => 'endcondwait',
                        'Mutex602ae0' => 'endunlock'
@@ -9,33 +20,24 @@ $VAR2 = {
           'Children' => '',
           'Label' => 'handle_requests_loop'
         };
-$VAR3 = 'Threadb3d14700';
-$VAR4 = {
-          'Links' => {
-                       'Mutex602ae0' => 'endunlock'
-                     },
-          'Type' => 'Thread',
-          'Status' => 'Dead',
-          'Children' => '',
-          'Label' => 'handle_requests_loop'
-        };
-$VAR5 = 'Threadb3b132e0';
+$VAR5 = 'Threada5742e0';
 $VAR6 = {
           'Links' => {
-                       'Threadb3f16700' => 'endjoin',
-                       'Threadb3d14700' => 'endjoin',
+                       'Threada775700' => 'endcancel',
+                       'Threada977700' => 'endjoin',
                        'Cond602b20' => 'endbroadcast',
                        'Mutex602ae0' => 'endunlock'
                      },
           'Type' => 'Thread',
           'Status' => 'Alive',
-          'Children' => 'Mutex602ae0,Cond602b20,Threadb3d14700,Threadb3f16700,',
+          'Children' => 'Mutex602ae0,Cond602b20,Threada775700,Threada977700,',
           'Label' => '{root}'
         };
 $VAR7 = 'Cond602b20';
 $VAR8 = {
           'Type' => 'Condition Variable',
-          'Status' => 'Unblocked',
+          'Status' => 'Blocked',
+          'Count' => 1,
           'Label' => 'got_request'
         };
 $VAR9 = 'Mutex602ae0';
