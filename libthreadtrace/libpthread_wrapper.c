@@ -13,6 +13,7 @@ static char arg_buf[MAX_BUF_LEN] = {0};
 #define MAX_LOG_LINES	(4096)
 static int log_count = 0;
 
+#define LOG_FILE "/tmp/libthreadtrace.log"
 FILE *log_fp;
 void log_func_enter(pthread_t tid, char *func_name, char *args);
 void log_func_exit(pthread_t tid, char *func_name, char *args, int ret);
@@ -684,7 +685,7 @@ _init(void)
   }
 
   // open a file for logging and log program name
-  log_fp = fopen("/tmp/libthreadtrace.log", "w");
+  log_fp = fopen(LOG_FILE, "w");
 
   char *program_name = strrchr(path, '/');
   if (program_name != NULL)
@@ -692,7 +693,7 @@ _init(void)
   else
     fprintf(log_fp, "program_name: %s\n", path);
 
-  // delink targeted pthread functions to override them with our own
+  // stash pointers to the original location of targeted pthread functions so that we can still reference them after we override them with our own
   orig_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   orig_pthread_exit = dlsym(RTLD_NEXT, "pthread_exit");
   orig_pthread_join = dlsym(RTLD_NEXT, "pthread_join");
