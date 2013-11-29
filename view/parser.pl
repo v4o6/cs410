@@ -294,8 +294,13 @@ sub WriteDOTFile {
 					}
 				}
 			}
-			else { # $objects{$key}{'Status'} eq "Dead"
-				print GRAPHFILE "$key [color=lightgrey,label=\"$label\"];\n";
+			else { # $objects{$key}{'Status'} eq "Dead" or "Detatch"
+				if ($objects{$key}{'Status'} eq "Dead") {
+					print GRAPHFILE "$key [color=lightgrey,label=\"$label\"];\n";
+				}
+				else { #status = "Detatch"
+					print GRAPHFILE "$key [color=green,label=\"$label\"];\n";
+				}
 				# print out edges for each child thread
 				my @children = split ',', $objects{$key}{'Children'};
 				foreach my $child (@children) {
@@ -509,6 +514,11 @@ while (<LOGFILE>) {
 		}
 		else {
 			next;
+		}
+	}
+	elsif ($functionName eq "pthread_detatch" && $enterExit eq "ENTER") {
+		if (exists $objects{$arguments[0]}) {
+			$objects{$arguments[0]}{'Status'}{$arguments[0]} = 'Detatch';
 		}
 	}
 	elsif($functionName eq "pthread_join" && $enterExit eq "EXIT" && $return eq "0") {
