@@ -67,9 +67,10 @@ subgraph cluster_4 {
 	color=lightgrey;
 	N -> O [label="10 perl parser.pl", style="solid"];
 	O -> R [label="13 <a ...>output###.svg</a>"];
-	O -> H [label="14 <link ... rel=\"stylesheet\">"];
-	O -> P [label="15 <link ... rel=\"stylesheet\">"];
-	O -> Q [label="16 <script src="main.js">"];
+	O -> H [label="14 rel=\"stylesheet\""];
+	O -> P [label="15 rel=\"stylesheet\""];
+	O -> Q [label="16 script src=\"main.js\""];
+	R -> H [style=invis];
 }
 
 }
