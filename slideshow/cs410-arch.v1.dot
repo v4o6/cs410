@@ -1,0 +1,75 @@
+digraph G {
+	node [shape=box];
+	node [style=filled];
+	edge [style=dotted];
+	
+	node [color=grey]
+	A [label="A\npthread.h"];
+	B [label="B\nlibpthread.so"];
+	C [label="C\ndlfcn.h"];
+	D [label="D\nlibdl.so"];
+	E [label="E\n<INPUT PROGRAM>"];
+	F [label="F\nPerl"];
+	G [label="G\ngraphviz"];
+	H [label="H\nbootstrap.css"];
+	I [label="I\nHTTP browser"];
+		
+	node [color=hotpink]
+	J [label="J\nlibpthread_wrapper.c"];
+	K [label="K\nMakefile"];
+	L [label="L\nlibpthread_wrapper.so"];
+	M [label="M\nrun.sh"];
+	N [label="N\nparser.pl"];
+	O [label="O\nindex.html"];
+	P [label="P\nstyle.css"];
+	Q [label="Q\nmain.js"];
+	R [label="R\nimg/"];
+
+	E -> B [label="2 LDFLAGS"];
+	J -> A [label="3 #include"];
+	J -> C [label="4 #include"];
+	K -> D [label="5 LDFLAGS"];
+	L -> D [label=""];
+	K -> J [label="6 > make", style="solid"];
+	M -> L [label="7 LD_PRELOAD"];
+	M -> E [label="8 ./run.sh"];
+	M -> N [label="9 /tmp/libthreadtrace.log", style="solid"];
+	N -> G [label="11 dot/graph###.dot"];
+	G -> R [label="12 dot -Tsvg", style="solid"];	
+	N -> F [label=""];
+	O -> I [style="solid"];
+
+subgraph cluster_0 {
+	style=invis;
+	B;
+	D;
+}
+
+subgraph cluster_1 {
+	label = "libthreadtrace/";
+	style=filled;
+	color=lightgrey;
+	M;
+	L;
+	K -> J [label=""];
+}
+
+subgraph cluster_2 {
+	style=invis;
+	A;
+	C;
+	E -> A [label="1 #include"];
+}
+
+subgraph cluster_4 {
+	label="view/";
+	style=filled;
+	color=lightgrey;
+	N -> O [label="10 perl parser.pl", style="solid"];
+	O -> R [label="13 <a ...>output###.svg</a>"];
+	O -> H [label="14 <link ... rel=\"stylesheet\">"];
+	O -> P [label="15 <link ... rel=\"stylesheet\">"];
+	O -> Q [label="16 <script src="main.js">"];
+}
+
+}
