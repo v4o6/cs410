@@ -1,0 +1,18 @@
+digraph G {
+graph[center=true, ratio=1];
+Threada775700 [color=black,label="Threada775700\nhandle_requests_loop"];
+Threada775700 -> Cond602b20 [arrowhead=odiamond,color=red,penwidth=3];
+Threada775700 -> Mutex602ae0 [color=grey,dir=back,penwidth=3];
+Threada977700 [color=black,label="Threada977700\nhandle_requests_loop"];
+Threada977700 -> Cond602b20 [arrowhead=odiamond,color=red,penwidth=3];
+Threada977700 -> Mutex602ae0 [color=grey,dir=back,penwidth=3];
+Threada5742e0 [color=black,label="Threada5742e0\n{root}"];
+Threada5742e0 -> Mutex602ae0 [style=dotted,arrowhead=open,penwidth=3];
+Threada5742e0 -> Cond602b20 [style=dotted,arrowhead=open,penwidth=3];
+Threada5742e0 -> Threada775700 [style=dotted,arrowhead=open,penwidth=3];
+Threada5742e0 -> Threada977700 [style=dotted,arrowhead=open,penwidth=3];
+Threada5742e0 -> Cond602b20 [style=dashed,arrowhead=diamond,color=grey,penwidth=3];
+Threada5742e0 -> Mutex602ae0 [color=green,dir=back,penwidth=3];
+Cond602b20 [shape=parallelogram,color=red,label="Cond602b20\ngot_request"];
+Mutex602ae0 [shape=trapezium,color=red,label="Mutex602ae0\nrequest_mutex"];
+}
